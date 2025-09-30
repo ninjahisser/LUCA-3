@@ -1,0 +1,60 @@
+/* Algemene popup styling */
+body {
+    font-family: sans-serif;
+    min-width: 220px;
+    padding: 10px;
+}
+
+/* Knoppen */
+button {
+    margin: 5px 0;
+    padding: 6px 12px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #555;
+}
+
+/* Log box */
+#logBox {
+    margin-top: 10px;
+    width: 100%;
+    height: 120px;
+    font-size: 12px;
+    background: #111;
+    color: #0f0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    resize: none;
+    padding: 4px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+/* Censored tekst op de pagina */
+.censored {
+    background: black;
+    color: black;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.censored:hover {
+    color: white; /* laat hint zien bij hover */
+}
+
+/* Revealed tekst */
+.revealed {
+    background: none;
+    color: inherit;
+    cursor: default;
+}
