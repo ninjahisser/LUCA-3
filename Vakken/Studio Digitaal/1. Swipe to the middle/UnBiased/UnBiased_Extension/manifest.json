@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "UnBiased",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Are you really that unbiased?",
   "permissions": [
     "storage",
@@ -11,21 +11,13 @@
     "https://api.openai.com/*"
   ],
   "background": {
-    "scripts": [
-      "background.js"
-    ]
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content.js"
-      ],
-      "css": [
-        "style.css"
-      ]
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["style.css"]
     }
   ],
   "browser_action": {

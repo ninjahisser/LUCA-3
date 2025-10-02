@@ -1,54 +1,47 @@
-// popup.js
-// Handles saving API key and sending requests to ChatGPT
+document.addEventListener("DOMContentLoaded", () => {
+  const apiKeyInput = document.getElementById("apiKey");
+  const saveButton = document.getElementById("saveKey");
+  const sendHelloButton = document.getElementById("sendHello");
+  const output = document.getElementById("output");
 
-// Get references to DOM elements
-const apiKeyInput = document.getElementById("apiKey");
-const saveButton = document.getElementById("saveKey");
-const sendHelloButton = document.getElementById("sendHello");
-const output = document.getElementById("output");
+  // Load saved API key
+  chrome.storage.local.get("chatgpt_api_key", res => {
+    if (res.chatgpt_api_key) apiKeyInput.value = res.chatgpt_api_key;
+  });
 
-// Load saved API key when popup opens
-browser.storage.local.get("chatgpt_api_key").then((res) => {
-  if (res.chatgpt_api_key) {
-    apiKeyInput.value = res.chatgpt_api_key;
-  }
-});
+  // Save API key
+  saveButton.addEventListener("click", () => {
+    const key = apiKeyInput.value.trim();
+    if (!key) return output.textContent = "Please enter a valid API key.";
 
-// Save API key
-saveButton.addEventListener("click", () => {
-  const key = apiKeyInput.value.trim();
-  if (key) {
-    browser.storage.local.set({ chatgpt_api_key: key }).then(() => {
+    chrome.storage.local.set({ chatgpt_api_key: key }, () => {
       output.textContent = "API Key saved!";
     });
-  } else {
-    output.textContent = "Please enter a valid API key.";
-  }
-});
+  });
 
-// Send "hello" to ChatGPT
-sendHelloButton.addEventListener("click", async () => {
-  output.textContent = "ChatGPT: " + "loading...";
+  // Send hello message
+  sendHelloButton.addEventListener("click", () => {
+    output.textContent = "ChatGPT: loading...";
 
-  const res = await browser.storage.local.get("chatgpt_api_key");
-  const key = res.chatgpt_api_key;
+    chrome.storage.local.get("chatgpt_api_key", res => {
+      const key = res.chatgpt_api_key;
+      if (!key) return output.textContent = "No API key saved!";
 
-  if (!key) {
-    output.textContent = "No API key saved!";
-    return;
-  }
+      chrome.runtime.sendMessage(
+        { action: "sendToChatGPT", apiKey: key, content: "hello" },
+        response => {
+          console.log("Full response:", response);
 
-  // Send message to background.js
-  browser.runtime.sendMessage({
-    action: "sendToChatGPT",
-    apiKey: key,
-    content: "hello"
-  }).then((response) => {
-    if (response.success) {
-      const reply = response.data.choices?.[0]?.message?.content || "No reply";
-      output.textContent = "ChatGPT: " + reply;
-    } else {
-      output.textContent = "Error: " + response.error;
-    }
+          if (!response) return output.textContent = "No response from background.js";
+
+          if (response.success) {
+            const reply = response.data?.choices?.[0]?.message?.content || "No reply";
+            output.textContent = "ChatGPT: " + reply;
+          } else {
+            output.textContent = "Error: " + response.error;
+          }
+        }
+      );
+    });
   });
 });
