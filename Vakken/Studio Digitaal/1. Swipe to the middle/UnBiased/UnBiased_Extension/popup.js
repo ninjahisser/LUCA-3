@@ -1,73 +1,54 @@
-// Render logs in de textarea
-function renderLogs() {
-    browser.storage.local.get("logs").then((data) => {
-        const logBox = document.getElementById("logBox");
-        if (logBox) {
-            logBox.value = (data.logs || []).join("\n");
-            logBox.scrollTop = logBox.scrollHeight;
-        }
-    });
-}
+// popup.js
+// Handles saving API key and sending requests to ChatGPT
 
-// Voeg een nieuwe log entry toe
-function logMessage(msg) {
-    browser.storage.local.get("logs").then((data) => {
-        let logs = data.logs || [];
-        logs.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
-        if (logs.length > 50) logs.shift();
-        browser.storage.local.set({ logs }).then(renderLogs);
-    });
-}
+// Get references to DOM elements
+const apiKeyInput = document.getElementById("apiKey");
+const saveButton = document.getElementById("saveKey");
+const sendHelloButton = document.getElementById("sendHello");
+const output = document.getElementById("output");
 
-// Laad opgeslagen API key bij openen van popup
-browser.storage.local.get("apiKey").then((data) => {
-    if (data.apiKey) {
-        document.getElementById("apiKey").value = data.apiKey;
-        logMessage("Loaded saved API Key.");
-    }
+// Load saved API key when popup opens
+browser.storage.local.get("chatgpt_api_key").then((res) => {
+  if (res.chatgpt_api_key) {
+    apiKeyInput.value = res.chatgpt_api_key;
+  }
 });
 
 // Save API key
-document.getElementById("saveApiKey").addEventListener("click", () => {
-    const key = document.getElementById("apiKey").value.trim();
-    if (key) {
-        browser.storage.local.set({ apiKey: key }).then(() => {
-            logMessage("Saved API Key.");
-        });
+saveButton.addEventListener("click", () => {
+  const key = apiKeyInput.value.trim();
+  if (key) {
+    browser.storage.local.set({ chatgpt_api_key: key }).then(() => {
+      output.textContent = "API Key saved!";
+    });
+  } else {
+    output.textContent = "Please enter a valid API key.";
+  }
+});
+
+// Send "hello" to ChatGPT
+sendHelloButton.addEventListener("click", async () => {
+  output.textContent = "ChatGPT: " + "loading...";
+
+  const res = await browser.storage.local.get("chatgpt_api_key");
+  const key = res.chatgpt_api_key;
+
+  if (!key) {
+    output.textContent = "No API key saved!";
+    return;
+  }
+
+  // Send message to background.js
+  browser.runtime.sendMessage({
+    action: "sendToChatGPT",
+    apiKey: key,
+    content: "hello"
+  }).then((response) => {
+    if (response.success) {
+      const reply = response.data.choices?.[0]?.message?.content || "No reply";
+      output.textContent = "ChatGPT: " + reply;
     } else {
-        logMessage("No API Key entered.");
+      output.textContent = "Error: " + response.error;
     }
+  });
 });
-
-// Bias knoppen
-document.getElementById("blockLeft").addEventListener("click", () => {
-    browser.storage.local.set({ bias: "left" }).then(() => {
-        logMessage("Selected LEFT bias.");
-    });
-});
-
-document.getElementById("blockRight").addEventListener("click", () => {
-    browser.storage.local.set({ bias: "right" }).then(() => {
-        logMessage("Selected RIGHT bias.");
-    });
-});
-
-// Apply censorship knop -> stuurt bericht naar content.js
-document.getElementById("applyBias").addEventListener("click", () => {
-    browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-        browser.tabs.sendMessage(tabs[0].id, { action: "rerun", reset: true });
-        logMessage("Applied censorship to page.");
-    });
-});
-
-// Clear logs knop
-document.getElementById("clearLogs").addEventListener("click", () => {
-    browser.storage.local.set({ logs: [] }).then(() => {
-        renderLogs();
-        logMessage("Console cleared."); // optioneel, wordt direct getoond
-    });
-});
-
-
-// Initial render van logs bij openen
-renderLogs();
