@@ -1,26 +1,26 @@
 /* style.css */
-body {
+#unbiased body {
   font-family: Arial, sans-serif;
   width: 250px;
   padding: 10px;
 }
 
-h2 {
+#unbiased h2 {
   font-size: 18px;
   margin-bottom: 10px;
 }
 
-label {
+#unbiased label {
   font-size: 14px;
 }
 
-input {
+#unbiased input {
   width: 100%;
   margin: 5px 0;
   padding: 5px;
 }
 
-button {
+#unbiased button {
   margin: 5px 0;
   width: 100%;
   padding: 6px;
@@ -31,11 +31,11 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+#unbiased button:hover {
   background-color: #357ab7;
 }
 
-pre {
+#unbiased pre {
   font-size: 12px;
   background: #f0f0f0;
   padding: 6px;
