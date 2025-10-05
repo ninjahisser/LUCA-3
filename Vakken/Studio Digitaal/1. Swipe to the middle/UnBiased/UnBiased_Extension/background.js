@@ -1,8 +1,6 @@
 console.log("background.js loaded");
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("Got message:", message);
-
   if (message.action === "sendToChatGPT") {
     fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -16,17 +14,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       })
     })
       .then(res => res.json())
-      .then(data => {
-        console.log("OpenAI response:", data);
-        sendResponse({ success: true, data });
-      })
-      .catch(err => {
-        console.error("Fetch error:", err);
-        sendResponse({ success: false, error: err.message });
-      });
+      .then(data => sendResponse({ success: true, data }))
+      .catch(err => sendResponse({ success: false, error: err.message }));
 
     return true; // keep channel open
   }
 
   sendResponse({ success: false, error: "Unknown action" });
+});
+
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("UnBiased extension installed.");
 });

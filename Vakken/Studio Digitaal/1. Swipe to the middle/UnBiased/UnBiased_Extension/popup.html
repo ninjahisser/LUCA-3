@@ -5,14 +5,19 @@
   <title>UnBiased</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body id="unbiased">
   <h2>UnBiased</h2>
+
   <label for="apiKey">ChatGPT API Key:</label>
   <input type="password" id="apiKey" placeholder="Enter your API key">
   <button id="saveKey">Save Key</button>
+
   <hr>
-  <button id="sendHello">Send "Hello" to ChatGPT</button>
+  <button id="sendHello">Check & Censor Article</button>
+  <button id="clearSites">Clear Saved Sites</button>
+
   <pre id="output"></pre>
+
   <script src="popup.js"></script>
 </body>
 </html>
