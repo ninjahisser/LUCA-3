@@ -2,6 +2,8 @@ console.log("background.js loaded");
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "sendToChatGPT") {
+    const model = message.model || "gpt-3.5-turbo"; // default to GPT-3.5
+
     fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -9,7 +11,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model: model,
         messages: [{ role: "user", content: message.content }]
       })
     })
@@ -17,7 +19,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .then(data => sendResponse({ success: true, data }))
       .catch(err => sendResponse({ success: false, error: err.message }));
 
-    return true; // keep channel open
+    return true; // keep channel open for async response
   }
 
   sendResponse({ success: false, error: "Unknown action" });

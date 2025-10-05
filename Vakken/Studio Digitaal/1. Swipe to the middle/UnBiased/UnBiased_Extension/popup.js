@@ -10,26 +10,25 @@ document.addEventListener("DOMContentLoaded", () => {
     output.scrollTop = output.scrollHeight;
   }
 
-  // Load saved key
+  // Load saved API key
   chrome.storage.local.get("chatgpt_api_key", res => {
     if (res.chatgpt_api_key) apiKeyInput.value = res.chatgpt_api_key;
   });
 
-  // Save key
   saveButton.addEventListener("click", () => {
     const key = apiKeyInput.value.trim();
     if (!key) return log("No API key entered.");
     chrome.storage.local.set({ chatgpt_api_key: key }, () => log("API Key saved!"));
   });
 
-  // Send message to ChatGPT
-  function sendMessageToChatGPT(message) {
+  // Generic function to talk to ChatGPT
+  async function sendMessageToChatGPT(message, model = "gpt-3.5-turbo") {
     return new Promise((resolve, reject) => {
       chrome.storage.local.get("chatgpt_api_key", res => {
         const key = res.chatgpt_api_key;
         if (!key) return reject("No API key saved!");
         chrome.runtime.sendMessage(
-          { action: "sendToChatGPT", apiKey: key, content: message },
+          { action: "sendToChatGPT", apiKey: key, content: message, model: model },
           response => {
             if (!response) return reject("No response from background.js");
             if (response.success) resolve(response.data?.choices?.[0]?.message?.content || "No reply");
@@ -40,13 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Cache site checks
+  // Check if the site is a news article
   function checkIfNewsSite(url) {
     return new Promise((resolve, reject) => {
       const storageKey = "site_is_news_" + url;
       chrome.storage.local.get(storageKey, res => {
         if (res[storageKey] !== undefined) return resolve(res[storageKey]);
-        sendMessageToChatGPT(`Bepaal of deze URL een nieuwsartikel is: ${url}. Antwoord alleen true of false.`)
+        sendMessageToChatGPT(`Bepaal of deze URL een nieuwsartikel is: ${url}. Antwoord alleen true of false.`, "gpt-3.5-turbo")
           .then(reply => {
             const isNews = reply.toLowerCase().includes("true");
             chrome.storage.local.set({ [storageKey]: isNews }, () => resolve(isNews));
@@ -56,160 +55,134 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Split HTML into chunks
-  function splitHtmlIntoChunks(html, maxLen = 3000) {
-    const chunks = [];
-    let start = 0;
-    while (start < html.length) {
-      chunks.push(html.slice(start, start + maxLen));
-      start += maxLen;
-    }
-    return chunks;
-  }
-
-  // === censor function with toggle ===
-  function censorTextInChunks(html, chunksToCensor) {
+  // Extract only visible text from HTML
+  function extractVisibleText(html) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
-
     const walker = document.createTreeWalker(
       doc.body,
       NodeFilter.SHOW_TEXT,
       {
         acceptNode: node => {
-          if (node.parentNode && ["SCRIPT","STYLE","NOSCRIPT"].includes(node.parentNode.tagName)) {
-            return NodeFilter.FILTER_REJECT;
-          }
+          if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          if (["SCRIPT","STYLE","NOSCRIPT"].includes(node.parentNode.tagName)) return NodeFilter.FILTER_REJECT;
           return NodeFilter.FILTER_ACCEPT;
         }
       }
     );
-
-    const textNodes = [];
-    while (walker.nextNode()) textNodes.push(walker.currentNode);
-
-    textNodes.forEach(node => {
-      let text = node.nodeValue;
-      let censoredText = text;
-
-      chunksToCensor.forEach(chunk => {
-        if (!chunk) return;
-        const safeChunk = chunk.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(safeChunk, "gi");
-        censoredText = censoredText.replace(regex, `<span class="UnBiased_Censored" data-original="${chunk}" data-censored="${chunk}">${chunk}</span>`);
-      });
-
-      if (censoredText !== text) {
-        const wrapper = document.createElement("span");
-        wrapper.innerHTML = censoredText;
-
-        while (wrapper.firstChild) {
-          node.parentNode.insertBefore(wrapper.firstChild, node);
-        }
-        node.parentNode.removeChild(node);
-      }
-    });
-
-    // Add click listener to toggle
-    doc.body.querySelectorAll(".UnBiased_Censored").forEach(span => {
-      span.style.cursor = "pointer";
-      span.addEventListener("click", () => {
-        const current = span.innerText;
-        const original = span.getAttribute("data-original");
-        const censored = span.getAttribute("data-censored");
-        if (current === original) {
-          span.innerText = censored;
-        } else {
-          span.innerText = original;
-        }
-      });
-    });
-
-    return doc.body.innerHTML;
+    let text = "";
+    while (walker.nextNode()) text += walker.currentNode.nodeValue + " ";
+    return text;
   }
 
-  // Main button
-  sendButton.addEventListener("click", () => {
+  // Split text into large chunks (15k chars)
+  function splitTextIntoChunks(text, maxLen = 15000) {
+    const chunks = [];
+    let start = 0;
+    while (start < text.length) {
+      chunks.push(text.slice(start, start + maxLen));
+      start += maxLen;
+    }
+    return chunks;
+  }
+
+  // Censor sentences by wrapping them in span
+  function censorHTMLWithSentences(html, sentences) {
+    let censoredHTML = html;
+
+    sentences.forEach(sentence => {
+      if (!sentence) return;
+
+      // Escape regex en accepteer ' of "
+      const escaped = sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                              .replace(/['"]/g, '[\'"]');
+
+      const regex = new RegExp(escaped, 'gi');
+
+      censoredHTML = censoredHTML.replace(regex, match => 
+        `<span class="UnBiased_Censored">${match}</span>`
+      );
+    });
+
+    return censoredHTML;
+  }
+
+  // Main button click
+  sendButton.addEventListener("click", async () => {
     output.textContent = "";
     log("Send button clicked.");
 
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
       if (!tabs.length) return log("No active tab found.");
       const tab = tabs[0];
       const url = tab.url;
 
-      checkIfNewsSite(url)
-        .then(isNews => {
-          if (!isNews) return log("Not a news site.");
+      try {
+        const isNews = await checkIfNewsSite(url);
+        if (!isNews) return log("Not a news site.");
+        log("Site is a news article. Checking polarization...");
 
-          log("Site is a news article. Checking polarization...");
-          sendMessageToChatGPT(`Lees dit nieuwsartikel: ${url}.
+        // --- GPT-3.5 for polarisation ---
+        const polarizationReply = await sendMessageToChatGPT(
+          `Lees dit nieuwsartikel: ${url}.
 Geef antwoord in formaat:
-"Polarisatie: true/false
-Zijdes: [zijde 1] vs [zijde 2]".
-Gebruik de taal van het artikel. Kies kanten met hoog contrast.`)
-          .then(reply => {
-            log("Received polarization check: " + reply);
+Polarisatie: true/false
+Zijdes: [zijde 1] vs [zijde 2].
+Gebruik de taal van het artikel.`,
+          "gpt-3.5-turbo"
+        );
+        log("Polarization check: " + polarizationReply);
 
-            const sideLine = reply.split("\n").find(l => l.startsWith("Zijdes:"));
-            if (!sideLine || sideLine.toLowerCase().includes("geen")) return log("No sides to censor.");
+        const sideLine = polarizationReply.split("\n").find(l => l.startsWith("Zijdes:"));
+        if (!sideLine || sideLine.toLowerCase().includes("geen")) return log("No sides to censor.");
+        const [chosenSide, otherSide] = sideLine.replace("Zijdes:", "").split(" vs ").map(s => s.trim());
+        log("Chosen side: " + chosenSide + " | Other side to censor: " + otherSide);
 
-            const sides = sideLine.replace("Zijdes:", "").split(" vs ");
-            const chosenSide = sides[0].trim(); // side to keep
-            const otherSide = sides[1]?.trim() || ""; // side to censor
+        // --- Get HTML from page ---
+        const response = await new Promise(resolve =>
+          chrome.tabs.sendMessage(tab.id, { action: "getHTML" }, resolve)
+        );
+        if (!response.html) return log("No HTML received from page.");
 
-            log("Chosen side (keep): " + chosenSide);
-            log("Other side (censor): " + otherSide);
+        // Extract visible text and split into chunks
+        const visibleText = extractVisibleText(response.html);
+        const textChunks = splitTextIntoChunks(visibleText, 1500000);
 
-            // Get HTML from page
-            chrome.tabs.sendMessage(tab.id, { action: "getHTML" }, async response => {
-              if (!response || !response.html) return log("No HTML received from content script.");
-              log("Received HTML from page. Sending to ChatGPT for censorship based on other side.");
+        let sentencesToCensor = [];
 
-              const htmlChunks = splitHtmlIntoChunks(response.html, 3000);
-              let allChunksToCensor = [];
-
-              for (const chunk of htmlChunks) {
-                const prompt = `
+        // --- GPT-5-mini for censoring ---
+        for (const chunk of textChunks) {
+          const prompt = `
 Lees het volgende fragment en markeer alles dat vanuit de polariserende kant voor mensen van "${chosenSide}" komt.
-Censuur alles dat zelf een mini-beetje aanstoontgevend kan zijn voor mensen van "${chosenSide}", censuureer alles zodat zij hun zin krijgen in elke manier en overdrijf, het moet lijken alsof hun kant gelijk heeft en de andere kant fout is. Het moet een polariserend effect geven en duidelijk maken van de polarisatie. Maak een soort wereldje voor de mensen van de gekozen kant dat alles perfect is aan hun kant, geen kritiek of iets, zij zijn juist en iedereen is fout.
-Laat de andere kant express meer slecht lijken door dingen niet te censureren die hen negatief afschilderen.
-Vervorm zinnen door ze negatief te maken over de andere kant, zelfs als dat niet zo bedoeld is, door bevoorbeeld selectief delen van een zin te censureren en leestekens zoals vraagtekens om het negatieve statements te maken.
+Censureer contextueel en volledig, zonder de betekenis of schrijffouten te veranderen.
 Antwoord alleen in JSON-formaat:
 {
   "to_censor": ["<tekst 1>", "<tekst 2>", ...]
 }
 Fragment:
 ${chunk}
-`;
-                try {
-                  const chatResponse = await sendMessageToChatGPT(prompt);
-                  try {
-                    const parsed = JSON.parse(chatResponse.replace(/\n/g, ''));
-                    if (parsed.to_censor) allChunksToCensor.push(...parsed.to_censor);
-                  } catch (e) {
-                    log("Failed to parse JSON from a chunk, skipping it.");
-                  }
-                } catch (err) {
-                  log("Error asking ChatGPT for a chunk: " + err);
-                }
-              }
+          `;
+          try {
+            const chatResponse = await sendMessageToChatGPT(prompt, "gpt-5-mini");
+            try {
+              const parsed = JSON.parse(chatResponse.replace(/\n/g, ''));
+              if (parsed.to_censor) sentencesToCensor.push(...parsed.to_censor);
+            } catch (e) {
+              log("Failed to parse JSON for a chunk, skipping it.");
+            }
+          } catch (err) {
+            log("Error from ChatGPT for a chunk: " + err);
+          }
+        }
 
-              if (!allChunksToCensor.length) return log("No chunks to censor according to ChatGPT.");
+        if (!sentencesToCensor.length) return log("No sentences to censor.");
 
-              // Apply censorship with toggle
-              const censoredHTML = censorTextInChunks(response.html, allChunksToCensor);
-              log("Censorship complete. First 500 chars:");
-              log(censoredHTML.substring(0, 500));
-
-              // Inject back into page
-              chrome.tabs.sendMessage(tab.id, { action: "replaceMainHTML", html: censoredHTML });
-              log("Injected censored HTML into page.");
-            });
-          })
-          .catch(err => log("Error checking polarization: " + err));
-        })
-        .catch(err => log("Error checking news site: " + err));
+        const censoredHTML = censorHTMLWithSentences(response.html, sentencesToCensor);
+        chrome.tabs.sendMessage(tab.id, { action: "replaceMainHTML", html: censoredHTML });
+        log("Censorship applied successfully!");
+      } catch (err) {
+        log("Error: " + err);
+      }
     });
   });
 
