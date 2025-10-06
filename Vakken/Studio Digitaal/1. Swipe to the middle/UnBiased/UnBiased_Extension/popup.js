@@ -153,11 +153,45 @@ Gebruik de taal van het artikel.`,
         // --- GPT-5-mini for censoring ---
         for (const chunk of textChunks) {
           const prompt = `
-Lees het volgende fragment en markeer alles dat vanuit de polariserende kant voor mensen van "${chosenSide}" komt.
-Censureer contextueel en volledig, zonder de betekenis of schrijffouten te veranderen.
+Lees het volgende fragment en markeer alles dat vanuit de polariserende kant voor mensen van "${chosenSide}" komt., die tegen de kant van mensen is van "${otherSide}".
+Markeer contextueel en volledig, zonder de betekenis of schrijffouten te veranderen.
+Zorg dat je alles dat mensen van de kant ${chosenSide} onbewust niet zouden willen lezen, gemarkeerd wordt. Wees extreem, vervorm zinnen.
+Bv. 
+Als het artikel zou zijn:
+"Uit welke hoek komt het politieke geweld: links of rechts?", en de kant links in de plaats van ${chosenSide}, dan wordt die zin:
+"Uit welke hoek komt het politiek geweld: ##### ## rechts#, dus als iemand het leest krijgt die het gevoel alsof er staat:
+"Uit welke hoek komt het poltiek geweld: rechts", dat is wat een linkse persoon zou lezen met een polariserende mindset.
+De hashtags zijn het gemarkeerde deel.
+
+Overdrijf, markeer zeker de helft van het fragment, je mag ook tekens markeren zoals vraagtekens, of letters markeren om het artikel te vervormen van context in favor van "${otherSide}". Of enkele woorden.
+
+Wat we doen is een extension maken die mensen confronteert met hoe polariserend ze onbeuwst zijn met het willen in hun ideale wereld, dat ze door de schok ervan zien hoe zwart/Wit en onbewust polariserend ze zijn.
+
+Je kan dus tekst markeren die zou tonen wat polariserende mensen van "${chosenSide}" niet zouden lezen omdat ze een gepolariseerde blik hebben over "${otherSide}", dus markeer dat zodat het zeker lezen.
+Je kan ook leestekens en zinnen weglaten om duidelijk te maken hoe iemand fout leest.
+
+Markeer wat ${chosenSide} negatief laat lijken!
+
+Een zin zoals:
+Conner Rousseau (Vooruit) benadrukt dat geweld van beide kanten komt: Of het extreemrechts is, zoals in Nederland, of extreemlinks zoals in Luik: les extrèmes se touchent."
+
+Zou dus:
+Conner Rousseau (Vooruit) benadrukt dat geweld van ##### ###### ####: ## het extreemrechts is, zoals in Nederland, ## ############ ##### ## ##### ### ######## ## ##########
+Worden.
+
+Dit is een voorbeeld van Links Rechts, de hashtags zijn het markeed deel
+
+Stel je bij alles voor van als ik marked deel weg laat, (wat de kijker zonder dit perongeluk doet), zou de teksts dan positiever zijn voor "${chosenSide}" en negatiever voor ${otherSide}?
+
+Geef geen letterlijk hashtags, behoud de originele tekst, maar mark het "hashtag" deel in to_mark in de json.
+
+Iets zoals "2. Komt het geweld van de rechterkant?" zou je dus niet markeren want als je dat weglaat, dan wordt de teksts positiever voor die kant (als je van de linkse kant bent). In dit geval (voorbeelden zijn links tegen rechts, hebben wij ${chosenSide} vs ${otherSide}})
+
+Stel je voor dat dit een scenario is, iemand die de marked teksts allemaal zou weglaten, zou de kant van "${chosenSide}" als alleen positief en superieur zien, en een negatiever beeld krijgen van "${otherSide}".
+
 Antwoord alleen in JSON-formaat:
 {
-  "to_censor": ["<tekst 1>", "<tekst 2>", ...]
+  "to_mark": ["<tekst 1>", "<tekst 2>", ...]
 }
 Fragment:
 ${chunk}
@@ -166,7 +200,7 @@ ${chunk}
             const chatResponse = await sendMessageToChatGPT(prompt, "gpt-5-mini");
             try {
               const parsed = JSON.parse(chatResponse.replace(/\n/g, ''));
-              if (parsed.to_censor) sentencesToCensor.push(...parsed.to_censor);
+              if (parsed.to_mark) sentencesToCensor.push(...parsed.to_mark);
             } catch (e) {
               log("Failed to parse JSON for a chunk, skipping it.");
             }
