@@ -1,0 +1,173 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --maxw: 68rem;
+    --gap: 1rem;
+    --radius: 10px;
+}
+
+html {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto,
+        Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    line-height: 1.6;
+    color: #111;
+    background:
+        #fafafa;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.vh {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space:
+        nowrap;
+    border: 0;
+}
+
+header {
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+}
+
+header,
+main,
+footer {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: .75rem var(--gap);
+}
+
+.brand {
+    font-weight: 700;
+    letter-spacing: .2px;
+    text-decoration:
+        none;
+    color: inherit;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: .75rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    padding: .25rem .5rem;
+    border-radius: .4rem;
+}
+
+nav a:hover {
+    background: #efefef;
+}
+
+[aria-current="page"] {
+    background: #111;
+    color: #fff;
+}
+
+h1 {
+    font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+    margin: 1rem 0 .5rem;
+}
+
+h2 {
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    margin: 1rem 0 .25rem;
+}
+
+p,
+li {
+    max-width: 65ch;
+}
+
+main {
+    padding: 1rem var(--gap) 2rem;
+}
+
+section {
+    margin: 1.25rem 0 2rem;
+}
+
+ul {
+    padding-left: 1.25rem;
+}
+
+figure {
+    margin: 1rem 0;
+}
+
+figure img {
+    border-radius: var(--radius);
+}
+
+figure figcaption {
+    color: #555;
+    font-size: .9rem;
+    margin-top:
+        .5rem;
+}
+
+.contact-form {
+    display: grid;
+    gap: .75rem;
+    max-width: 40rem;
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: var(--radius);
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: .6rem .7rem;
+    border: 1px solid #ccc;
+    border-radius: .5rem;
+    background: #fafafa;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: 2px solid #111;
+    background: #fff;
+}
+
+.contact-form button {
+    justify-self: start;
+    padding: .6rem .9rem;
+    border: none;
+    border-radius: .5rem;
+    background: #111;
+    color: #fff;
+    cursor: pointer;
+}
+
+.contact-form button:hover {
+    filter: brightness(1.1);
+}
+
+.form-note {
+    font-size: .9rem;
+    color: #666;
+    margin: .25rem 0 0;
+}
