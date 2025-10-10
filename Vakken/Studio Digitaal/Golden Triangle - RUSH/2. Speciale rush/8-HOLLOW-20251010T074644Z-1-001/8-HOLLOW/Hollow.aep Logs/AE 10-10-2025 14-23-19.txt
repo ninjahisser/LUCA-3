@@ -1,0 +1,22 @@
+Adobe After Effects v25.5 Windows 64 render log for project “Hollow.aep”
+
+Rendering started on 10/10/2025 at 14:23:19
+
+  10/10/2025 14:23:19: Starting composition “16_1”.
+
+  Output To: C:\Users\sethv\Desktop\LUCA-3\Vakken\Studio Digitaal\Golden Triangle - RUSH\2. Speciale rush\8-HOLLOW-20251010T074644Z-1-001\8-HOLLOW\Renders\SethVandenBossche_Hollow_Illustratie16_V1.mov    10/10/2025 14:25:10: Finished composition “16_1”.
+
+
+  10/10/2025 14:25:11: Starting composition “16_2”.
+
+  Output To: C:\Users\sethv\Desktop\LUCA-3\Vakken\Studio Digitaal\Golden Triangle - RUSH\2. Speciale rush\8-HOLLOW-20251010T074644Z-1-001\8-HOLLOW\Renders\SethVandenBossche_Hollow_Illustratie16_V2.mov    10/10/2025 14:26:31: Finished composition “16_2”.
+
+
+  10/10/2025 14:26:32: Starting composition “16_3”.
+
+  Output To: C:\Users\sethv\Desktop\LUCA-3\Vakken\Studio Digitaal\Golden Triangle - RUSH\2. Speciale rush\8-HOLLOW-20251010T074644Z-1-001\8-HOLLOW\Renders\SethVandenBossche_Hollow_Illustratie16_V3.mov    10/10/2025 14:29:35: Finished composition “16_3”.
+
+
+  Total Time Elapsed: 6 Min, 16 Sec
+Log closed on 10/10/2025 at 14:29:36
+
