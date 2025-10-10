@@ -1,0 +1,42 @@
+Adobe After Effects v25.5 Windows 64 render log for project “Hollow.aep”
+
+Rendering started on 10/10/2025 at 16:39:53
+
+  10/10/2025 16:39:53: Starting composition “16_1”.
+
+  Output To: C:\Users\sethv\Desktop\LUCA-3\Vakken\Studio Digitaal\Golden Triangle - RUSH\2. Speciale rush\8-HOLLOW-20251010T074644Z-1-001\8-HOLLOW\Renders\16_1.mp4    10/10/2025 16:46:05: Finished composition “16_1”.
+
+
+  10/10/2025 16:46:06: Starting composition “16_2”.
+
+  Output To: C:\Users\sethv\Desktop\LUCA-3\Vakken\Studio Digitaal\Golden Triangle - RUSH\2. Speciale rush\8-HOLLOW-20251010T074644Z-1-001\8-HOLLOW\Renders\16_2.mp4    10/10/2025 16:53:48: Finished composition “16_2”.
+
+
+  10/10/2025 16:53:48: Starting composition “16_3”.
+
+  Output To: C:\Users\sethv\Desktop\LUCA-3\Vakken\Studio Digitaal\Golden Triangle - RUSH\2. Speciale rush\8-HOLLOW-20251010T074644Z-1-001\8-HOLLOW\Renders\16_3.mp4    10/10/2025 16:58:52: Finished composition “16_3”.
+
+
+  10/10/2025 16:58:52: Starting composition “25_1”.
+
+  Output To: C:\Users\sethv\Desktop\LUCA-3\Vakken\Studio Digitaal\Golden Triangle - RUSH\2. Speciale rush\8-HOLLOW-20251010T074644Z-1-001\8-HOLLOW\Renders\25_1.mp4    10/10/2025 17:02:08: Finished composition “25_1”.
+
+
+  10/10/2025 17:02:08: Starting composition “16_1”.
+
+  Output To: C:\Users\sethv\Desktop\LUCA-3\Vakken\Studio Digitaal\Golden Triangle - RUSH\2. Speciale rush\8-HOLLOW-20251010T074644Z-1-001\8-HOLLOW\Renders\16_1_1.mp4    10/10/2025 17:07:12: Finished composition “16_1”.
+
+
+  10/10/2025 17:07:12: Starting composition “16_2”.
+
+  Output To: C:\Users\sethv\Desktop\LUCA-3\Vakken\Studio Digitaal\Golden Triangle - RUSH\2. Speciale rush\8-HOLLOW-20251010T074644Z-1-001\8-HOLLOW\Renders\16_2_1.mp4    10/10/2025 17:11:57: Finished composition “16_2”.
+
+
+  10/10/2025 17:11:57: Starting composition “16_3”.
+
+  Output To: C:\Users\sethv\Desktop\LUCA-3\Vakken\Studio Digitaal\Golden Triangle - RUSH\2. Speciale rush\8-HOLLOW-20251010T074644Z-1-001\8-HOLLOW\Renders\16_3_1.mp4    10/10/2025 17:16:44: Finished composition “16_3”.
+
+
+  Total Time Elapsed: 36 Min, 50 Sec
+Log closed on 10/10/2025 at 17:16:44
+
