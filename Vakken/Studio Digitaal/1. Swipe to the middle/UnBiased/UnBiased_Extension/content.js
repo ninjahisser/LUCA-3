@@ -1,36 +1,30 @@
-console.log("UnBiased content script loaded");
+console.log("content.js loaded");
 
-// Inject style
-const style = document.createElement("style");
-style.id = "UnBiasedStyle";
-style.textContent = `
-  .UnBiased_Censored {
-    background-color: black !important;
-    color: black !important;
-    padding: 0 2px;
-    border-radius: 2px;
-  }
-`;
-(document.head || document.documentElement).appendChild(style);
-
-// Listen for messages
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "getHTML") {
-    // Try to find <main>, fallback to <body>
-    const main = document.querySelector("main") || document.body;
-    if (main) sendResponse({ html: main.innerHTML });
-    else sendResponse({ html: null });
-    return true;
+    sendResponse({ html: document.documentElement.outerHTML });
   }
 
-  if (message.action === "replaceMainHTML" && message.html) {
-    const main = document.querySelector("main") || document.body;
-    if (main) {
-      main.innerHTML = message.html;
-      sendResponse({ success: true });
-    } else {
-      sendResponse({ success: false, error: "No <main> or <body> found" });
-    }
-    return true;
+  if (message.action === "censorText") {
+    const { sideToCensor } = message.data;
+    censorPage(sideToCensor);
+  }
+
+  if (message.action === "logMessage") {
+    console.log("📩 LOG:", message.message);
   }
 });
+
+function censorPage(side) {
+  if (!side) return;
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const texts = [];
+  while (walker.nextNode()) texts.push(walker.currentNode);
+
+  texts.forEach(node => {
+    if (node.nodeValue.toLowerCase().includes(side)) {
+      node.nodeValue = "█".repeat(node.nodeValue.length);
+    }
+  });
+  console.log(`🔒 Censored all mentions of "${side}".`);
+}
