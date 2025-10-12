@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "UnBiased",
-  "version": "1.5",
+  "version": "1.6",
   "description": "Are you really that unbiased?",
   "permissions": [
     "storage",
