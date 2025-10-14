@@ -1,8 +1,28 @@
 #unbiased {
-  font-family: Arial, sans-serif;
-  width: 250px;
-  padding: 10px;
+  background: url("images/UI_background.png") no-repeat center center;
+  background-size: contain;
+  background-color: transparent !important;
 }
+
+#unbiased {
+  font-family: Arial, sans-serif;
+  width: 466px;
+  height: 418px;
+
+  /* Transparent background */
+  background-color: transparent;
+
+  /* Your orange PNG with transparency */
+  background-image: url("images/UI_background.png");
+  background-repeat: no-repeat;
+  background-size: contain; /* or 'cover' if you want it to fill */
+  background-position: center;
+
+  /* Make sure the popup allows transparency */
+  -moz-appearance: none;
+  appearance: none;
+}
+
 
 #unbiased h2 {
   font-size: 18px;
@@ -41,9 +61,4 @@
   border-radius: 3px;
   white-space: pre-wrap;
   word-wrap: break-word;
-}
-
-.UnBiased_Censored {
-  background-color: black !important;
-  color: black !important;
 }

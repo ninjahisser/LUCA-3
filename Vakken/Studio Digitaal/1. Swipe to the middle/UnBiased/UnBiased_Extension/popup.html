@@ -6,18 +6,23 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body id="unbiased">
-  <h2>UnBiased</h2>
+  <div class="unbiased-container">
+    <h1 class="logo">Un<span>Biased</span></h1>
 
-  <label for="apiKey">ChatGPT API Key:</label>
-  <input type="password" id="apiKey" placeholder="Enter your API key">
-  <button id="saveKey">Save Key</button>
+    <label for="apiKey" class="label">ChatGPT API Key:</label>
+    <input type="password" id="apiKey" placeholder="Enter your API key">
 
-  <hr>
-  <button id="sendHello">Check & Censor Article</button>
-  <button id="clearSites">Clear Saved Sites</button>
+    <button id="saveKey" class="btn primary">Save Key</button>
 
-  <pre id="output"></pre>
+    <hr class="divider">
+
+    <button id="sendHello" class="btn secondary">Check & Censor Article</button>
+    <button id="clearSites" class="btn danger">Clear Saved Sites</button>
+
+    <pre id="output"></pre>
+  </div>
 
   <script src="popup.js"></script>
+  <script src="content.js"></script>
 </body>
 </html>
