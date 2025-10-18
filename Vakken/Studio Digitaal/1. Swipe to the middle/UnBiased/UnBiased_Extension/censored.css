@@ -1,0 +1,81 @@
+  /* Buttons used to mark censored fragments */
+  .UnBiased_Censored_Chosen,
+  .UnBiased_Censored_Other {
+    transition-duration: 0.3s;
+  }
+
+  .UnBiased_Censored_Chosen {
+        margin: 0 -0.4em;
+    padding: 0.1em 0.4em;
+    border-radius: 0.8em 0.3em;
+    background: transparent;
+      background-image: linear-gradient( to right, 
+      rgba(0, 128, 178, 1) 30%, 
+      rgba(0, 92, 157, 1) 60%, 
+      rgba(7, 22, 228, 0.87) 
+    );
+  
+    color: rgba(0, 0, 0, 0) !important;
+  
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    color: rgba(255, 225, 0, 0.7);
+  }
+
+  .UnBiased_Censored_Other {
+        margin: 0 -0.4em;
+    padding: 0.1em 0.4em;
+    border-radius: 0.8em 0.3em;
+    background: transparent;
+      background-image: linear-gradient( to right, 
+      rgba(173, 25, 232, 1) 30%, 
+      rgba(227, 135, 255, 1) 60%, 
+      rgba(228, 51, 255, 0.87) 
+    );
+  
+    color: rgba(0, 0, 0, 0) !important;
+  
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    color: rgba(255, 225, 0, 0.7);
+  }
+
+  /* simple focus/hover styling */
+  .UnBiased_Censored_Chosen:hover,
+  .UnBiased_Censored_Other:hover,
+  .UnBiased_Censored_Chosen:focus,
+  .UnBiased_Censored_Other:focus {
+    color: initial !important;
+  }
+
+  .Unbiased_Censored_Chosen:hover{
+    background-image: linear-gradient( to right, 
+      rgba(0, 128, 178, 0.1) 30%, 
+      rgba(0, 92, 157, 0.1) 60%, 
+      rgba(7, 22, 228, 0.1) 
+    ) !important;
+  }
+
+  .Unbiased_Censored_Other:hover{
+    background-image: linear-gradient( to right, 
+      rgba(173, 25, 232, 0.1) 30%, 
+      rgba(227, 135, 255, 0.1) 60%, 
+      rgba(228, 51, 255, 0.1) 
+    ) !important;
+  }
+
+  /* Tooltip element */
+  #unbiased-tooltip {
+    position: fixed;
+    z-index: 2147483647;
+    pointer-events: none;
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    max-width: 36ch;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    transition: opacity 0.08s ease;
+    opacity: 0;
+  }

@@ -1,11 +1,8 @@
-console.log("background.js loaded");
-
 // Logging helper
 function log(msg, tabId = null) {
   console.log(msg);
-  console.log("TabId = ", tabId);
   if (tabId !== null) {
-    chrome.tabs.sendMessage(tabId, { action: "logMessage", message: msg });
+    try { chrome.tabs.sendMessage(tabId, { action: "logMessage", message: msg }); } catch (e) { console.warn("sendMessage failed", e); }
   }
   chrome.runtime.sendMessage({ action: "logMessage", message: msg });
 }
@@ -13,7 +10,7 @@ function log(msg, tabId = null) {
 // Listen for messages from popup.js
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "startCensorship") {
-    startCensorship(message.apiKey, message.url, message.tabId);
+    startCensorship(message.apiKey, message.url, message.tabId).catch(err => log("startCensorship error: " + err.message, message.tabId));
   }
   sendResponse({ success: true });
   return true;
@@ -29,7 +26,7 @@ function extractVisibleText(html) {
     {
       acceptNode: node => {
         if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-        if (["SCRIPT","STYLE","NOSCRIPT"].includes(node.parentNode.tagName)) return NodeFilter.FILTER_REJECT;
+        if (["SCRIPT", "STYLE", "NOSCRIPT"].includes(node.parentNode.tagName)) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
     }
@@ -49,17 +46,62 @@ function splitTextIntoChunks(text, maxLen = 15000) {
   return chunks;
 }
 
-function censorHTMLWithSentences(html, sentences) {
+function escapeForRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function escapeHtmlAttribute(s = "") {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function censorHTMLWithSentences(html, chosenSentences = [], otherSentences = []) {
   let censoredHTML = html;
 
-  sentences.forEach(sentence => {
-    if (!sentence) return;
-    const escaped = sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/['"]/g, '[\'"]');
-    const regex = new RegExp(escaped, 'gi');
-    censoredHTML = censoredHTML.replace(regex, match => 
-      `<span class="UnBiased_Censored">${match}</span>`
-    );
-  });
+  // normalize to objects and dedupe by text, sort by length desc
+  const normalize = arr => {
+    const items = (arr || []).map(item => {
+      if (!item) return null;
+      if (typeof item === "string") return { text: item.trim(), reason: "" };
+      if (typeof item === "object" && item.text) return { text: String(item.text).trim(), reason: String(item.reason || "") };
+      return null;
+    }).filter(Boolean);
+    // dedupe by text
+    const map = new Map();
+    items.forEach(it => { if (it.text) map.set(it.text, it); });
+    return Array.from(map.values()).sort((a,b) => b.text.length - a.text.length);
+  };
+
+  const chosen = normalize(chosenSentences);
+  const other = normalize(otherSentences);
+
+  const doReplace = (list, cssClass) => {
+    for (const item of list) {
+      try {
+        const sentence = item.text;
+        const reason = item.reason || "";
+        const escaped = escapeForRegex(sentence).replace(/['"]/g, '[\'"]');
+        const regex = new RegExp(escaped, 'gi');
+
+        // build replacement button HTML with safe attributes
+        const titleAttr = escapeHtmlAttribute(reason);
+        const dataReason = escapeHtmlAttribute(reason);
+        const replacement = `<span class="${cssClass}" data-reason="${dataReason}">${sentence}</span>`;
+
+        censoredHTML = censoredHTML.replace(regex, match => replacement);
+      } catch (e) {
+        console.warn("replace failed for sentence:", item, e);
+      }
+    }
+  };
+
+  // first chosen then other (order matters if overlap)
+  doReplace(chosen, 'UnBiased_Censored_Chosen');
+  doReplace(other, 'UnBiased_Censored_Other');
 
   return censoredHTML;
 }
@@ -75,6 +117,7 @@ async function startCensorship(apiKey, url, tabId) {
     );
     if (!response?.html) return log("❌ No HTML received from page.", tabId);
     const html = response.html;
+    console.log(html);
 
     // Step 1: Is it a news article?
     log(`➡️ Checking if news article...`, tabId);
@@ -114,10 +157,13 @@ async function startCensorship(apiKey, url, tabId) {
     const otherSide = side2.toLowerCase();
     log(`Chosen side: ${chosenSide} | Other side: ${otherSide}`, tabId);
 
+    hideAllText(tabId);
+
     // Step 3: Ask GPT to mark polarizing sentences (using visible text chunks)
     const visibleText = extractVisibleText(html);
     const chunks = splitTextIntoChunks(visibleText, 1500000);
-    let toMark = [];
+    let toMarkChosen = [];
+    let toMarkOther = [];
 
     for (const chunk of chunks) {
       const markPrompt = `
@@ -157,9 +203,13 @@ Iets zoals "2. Komt het geweld van de rechterkant?" zou je dus niet markeren wan
 
 Stel je voor dat dit een scenario is, iemand die de marked teksts allemaal zou weglaten, zou de kant van "${chosenSide}" als alleen positief en superieur zien, en een negatiever beeld krijgen van "${otherSide}".
 
+GEEF DE REASON ALTIJD IN DE TAAL VAN HET ARTIKEL EN ZORG DAT NIKS MARKED OVERLAPPED MET ELKAAR!
+
+DOE EXACT HETZELFDE HIERBOVEN MAAR IDPV DE CHOSEN (${chosenSide}) DOE JE HET VOOR DE OTHER SIDE (${otherSide})
 Antwoord alleen in JSON-formaat:
 {
-  "to_mark": ["<tekst 1>", "<tekst 2>", ...]
+  "to_mark_chosen": [{"text":"...","reason":"..."}],
+  "to_mark_other": [{"text":"...","reason":"..."}]
 }
 Fragment:
 ${chunk}
@@ -178,22 +228,104 @@ ${chunk}
         if (jsonMatch) {
           const cleanJSON = jsonMatch[1] ? jsonMatch[1].trim() : jsonMatch[0];
           const parsed = JSON.parse(cleanJSON);
-          if (parsed.to_mark) toMark.push(...parsed.to_mark);
+          // Normalize entries into objects {text, reason}
+          const addNormalized = (arr, target) => {
+            if (!arr) return;
+            if (Array.isArray(arr)) {
+              arr.forEach(it => {
+                if (!it) return;
+                if (typeof it === "string") target.push({ text: it, reason: "" });
+                else if (typeof it === "object" && it.text) target.push({ text: it.text, reason: it.reason || "" });
+              });
+            }
+          };
+
+          addNormalized(parsed.to_mark_chosen, toMarkChosen);
+          addNormalized(parsed.to_mark_other, toMarkOther);
+
+          // backward compatibility: accept "to_mark" as chosen side (strings)
+          if (!parsed.to_mark_chosen && parsed.to_mark && Array.isArray(parsed.to_mark)) {
+            parsed.to_mark.forEach(it => {
+              if (typeof it === "string") toMarkChosen.push({ text: it, reason: "" });
+            });
+          }
         }
+
+        // allow marking if at least one side has items
+        if (!toMarkChosen.length && !toMarkOther.length) return log("❌ No sentences to censor.", tabId);
+
+        // Step 4: Apply censorship without overwriting layout
+        const censoredHTML = censorHTMLWithSentences(html, toMarkChosen, toMarkOther);
+
+        // Extract only the <body> contents for replacement
+        const bodyMatch = censoredHTML.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        const bodyContent = bodyMatch ? bodyMatch[1] : censoredHTML;
+
+        // Send both arrays along for client to use (reasons embedded)
+        chrome.tabs.sendMessage(tabId, { action: "replaceMainHTML", html: bodyContent, toMarkChosen, toMarkOther });
+        log("✅ Censorship applied successfully!", tabId);
+
       } catch (e) {
         log("Failed to parse JSON for a chunk, skipping it.", tabId);
         log("🪶 Raw markText:\n" + markText, tabId);
       }
     }
 
-    if (!toMark.length) return log("❌ No sentences to censor.", tabId);
+    if (!toMarkChosen.length) return log("❌ No chosen sentences to censor.", tabId);
+    if (!toMarkOther.length) return log("❌ No other sentences to censor.", tabId);
 
     // Step 4: Apply censorship without overwriting layout
-    const censoredHTML = censorHTMLWithSentences(html, toMark);
-    chrome.tabs.sendMessage(tabId, { action: "replaceMainHTML", html: censoredHTML });
+    const censoredHTML_Chosen = censorHTMLWithSentences(html, toMarkChosen, toMarkOther);
+
+    // Extract only the <body> contents for replacement
+    const bodyMatch_Chosen = censoredHTML_Chosen.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    const bodyContent_Chosen = bodyMatch_Chosen ? bodyMatch_Chosen[1] : censoredHTML_Chosen;
+
+    chrome.tabs.sendMessage(tabId, { action: "replaceMainHTML", html: bodyContent_Chosen, toMarkChosen });
     log("✅ Censorship applied successfully!", tabId);
 
   } catch (err) {
     log("❌ Error: " + err.message, tabId);
   }
+}
+
+start();
+function start(){
+  console.log("background.js started");
+}
+
+// --- Auto-start censorship when a new page is fully loaded ---
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status !== 'complete' || !tab.url || !tab.url.startsWith('http')) return;
+  console.log(`🔄 Page loaded: ${tab.url}`);
+
+  (async () => {
+    try {
+      const autoRes = await new Promise(resolve => chrome.storage.local.get(["auto_activate"], resolve));
+      // normalize stored value to boolean (handles boolean true/false or string "true"/"false")
+      const raw = autoRes && autoRes.auto_activate;
+      const autoEnabled = (typeof raw === "string") ? (raw.toLowerCase() === "true") : Boolean(raw);
+      console.log("auto_activate raw:", raw, "coerced:", autoEnabled);
+
+      if (!autoEnabled) {
+        console.log("Auto-activate is disabled; skipping auto-censorship.");
+        return;
+      }
+
+      const keyRes = await new Promise(resolve => chrome.storage.local.get(["chatgpt_api_key"], resolve));
+      const apiKey = keyRes?.chatgpt_api_key;
+      if (!apiKey) {
+        console.warn("⚠️ No API key saved. Censorship not started.");
+        return;
+      }
+
+      await startCensorship(apiKey, tab.url, tabId);
+    } catch (err) {
+      console.error("Error during auto-start check:", err);
+    }
+  })();
+});
+
+function hideAllText(tabId){
+  chrome.tabs.sendMessage(tabId, { action: "censorAllText" });
 }
