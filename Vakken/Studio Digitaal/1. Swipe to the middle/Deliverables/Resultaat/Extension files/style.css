@@ -1,0 +1,167 @@
+*:has(#unbiased){
+  padding: 0px;
+  margin: 0px;
+  background-color: red;
+}
+
+:root{
+  --main-font: "Roboto", sans-serif;
+  --secondary-font: "Georgia", sans-serif;
+  --main-color: #005DFF;
+}
+
+#unbiased body{
+  width: 250px;
+  border: 3px solid var(--main-color);
+  padding: 10px;
+}
+
+#unbiased h1{
+  font-size: 2em;
+  font-family: var(--main-font);
+  font-weight: 700;
+  color: white;
+  background-color: var(--main-color);
+  display: block;
+  padding: 5px;
+  margin: -10px -10px 10px -10px;
+}
+
+#no_api_key{
+  margin: 20px;
+}
+
+#unbiased{
+  font-family: var(--secondary-font);
+  color: var(--main-color)
+}
+
+#unbiased #api_key p:nth-child(2){
+  font-weight: 800;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+#sendHello{
+  background-image: url(images/Button_blue.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 250px;
+  height: 80px;
+  margin: 10px auto -10px auto;
+  padding-bottom: 15px;
+  color: white;
+  font-family: var(--main-font);
+  font-weight: 700;
+  font-size: 1em;
+  border:none;
+  background-color: rgba(0, 0, 0, 0);
+  cursor: pointer;
+  transition-duration: .1s;
+}
+
+#sendHello:hover{
+  opacity: .9;
+  transform: scale(1.01);
+}
+
+#sendHello:active{
+  opacity: .5;
+  transform: scale(0.95);
+}
+
+/* Remove default body margin (the cause of the white border) */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Reset padding/margin only inside the popup */
+.unbiased-container * {
+  padding: 0;
+  margin: 0;
+}
+
+#unbiased-tooltip {
+    position: fixed;
+    z-index: 2147483647;
+    pointer-events: none;
+    background: white;
+    color: var(--main-color);
+    padding: 6px 8px;
+    font-size: 1em;
+    max-width: 36ch;
+    box-shadow: 5px 5px rgba(0,0,0,1);
+    transition: opacity 0.08s ease;
+    opacity: 0;
+    border-radius: 0px;
+    border: 2px solid var(--main-color);
+  }
+
+  #loadingOverlay {
+  position: fixed;
+  inset: 0;
+  color: var(--main-color);
+  border: 1px solid black;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 999999;
+  font-family: "Arial Black", sans-serif;
+  text-align: center;
+  transition: opacity 0.5s ease;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.boo-text {
+  z-index: 10000000;
+  font-size: 40vw;
+  font-weight: 900;
+  white-space: nowrap;
+  animation: scrollBoos 200s linear infinite;
+  font-family: var(--main-font);
+  text-shadow: 1px 1px black;
+}
+
+.boo-sub {
+  z-index: 10000000;
+  font-size: 2em;
+  transform: translateY(-200px);
+  opacity: 0.8;
+  letter-spacing: 0.2em;
+  text-align: center;
+  font-family: var(--main-font);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+@keyframes scrollBoos {
+  from { transform: translateX(50%); }
+  to { transform: translateX(-50%); }
+}
+
+#auto_activate {
+  /* use the popup main color for native checkbox UI where supported */
+  accent-color: var(--main-color);
+  /* size and alignment */
+  width: 1.05em;
+  height: 1.05em;
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: transparent;
+  color: inherit;
+  border: 1px solid var(--main-color);
+  /* remove top margin from the input itself */
+  margin-top: 0;
+    margin-left: 5px;
+}
+
+/* wrapper that moves checkbox and its label/text together */
+.auto-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 15px; /* move both checkbox and text down */
+}

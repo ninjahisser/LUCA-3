@@ -1,0 +1,37 @@
+Adobe After Effects v25.2.2 Windows 64 render log for project “instaposts.aep”
+
+Rendering started on 19/10/2025 at 19:42:23
+
+  19/10/2025 19:42:24: Starting composition “Post1”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\1. Swipe to the middle\Deliverables\Instagram beelden\Post1.mp4    19/10/2025 19:42:30: Finished composition “Post1”.
+
+
+  19/10/2025 19:42:30: Starting composition “Post2”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\1. Swipe to the middle\Deliverables\Instagram beelden\Post2.mp4    19/10/2025 19:42:33: Finished composition “Post2”.
+
+
+  19/10/2025 19:42:33: Starting composition “Post3”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\1. Swipe to the middle\Deliverables\Instagram beelden\Post3.mp4    19/10/2025 19:42:35: Finished composition “Post3”.
+
+
+  19/10/2025 19:42:35: Starting composition “Post4”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\1. Swipe to the middle\Deliverables\Instagram beelden\Post4.mp4    19/10/2025 19:42:38: Finished composition “Post4”.
+
+
+  19/10/2025 19:42:38: Starting composition “Post5”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\1. Swipe to the middle\Deliverables\Instagram beelden\Post5.mp4    19/10/2025 19:43:01: Finished composition “Post5”.
+
+
+  19/10/2025 19:43:02: Starting composition “Post6”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\1. Swipe to the middle\Deliverables\Instagram beelden\Post6.mp4    19/10/2025 19:43:39: Finished composition “Post6”.
+
+
+  Total Time Elapsed: 1 Min, 9 Sec
+Log closed on 19/10/2025 at 19:43:40
+

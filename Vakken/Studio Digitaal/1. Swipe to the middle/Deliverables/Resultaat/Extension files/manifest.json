@@ -1,0 +1,32 @@
+{
+  "manifest_version": 2,
+  "name": "ByeByeBiased",
+  "version": "1.6",
+  "description": "Are you really that unbiased?",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "<all_urls>",
+    "https://api.openai.com/*"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["style.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "browser_action": {
+    "default_title": "ByeByeBias",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "images/Icon.png"
+    }
+  }
+}

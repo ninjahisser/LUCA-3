@@ -141,3 +141,27 @@ body {
   from { transform: translateX(50%); }
   to { transform: translateX(-50%); }
 }
+
+#auto_activate {
+  /* use the popup main color for native checkbox UI where supported */
+  accent-color: var(--main-color);
+  /* size and alignment */
+  width: 1.05em;
+  height: 1.05em;
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: transparent;
+  color: inherit;
+  border: 1px solid var(--main-color);
+  /* remove top margin from the input itself */
+  margin-top: 0;
+    margin-left: 5px;
+}
+
+/* wrapper that moves checkbox and its label/text together */
+.auto-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 15px; /* move both checkbox and text down */
+}

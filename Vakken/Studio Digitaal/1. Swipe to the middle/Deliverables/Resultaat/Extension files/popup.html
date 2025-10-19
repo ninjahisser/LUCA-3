@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html id="unbiased">
+<head>
+  <meta charset="UTF-8">
+  <title>BYEBYEBIAS</title>
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="unbiased-container">
+    <h1>BYEBYEBIAS</h1>
+    <div id="no_api_key">
+      <label for="apiKey" class="label">ChatGPT API Key:</label>
+      <input type="password" id="apiKey" placeholder="Enter your API key">
+      <button id="saveKey" class="btn primary">Save Key</button>
+    </div>
+    
+    <div id="api_key">
+      <p>This article will be read differently depending on bias and personal views.</p>
+      <p>Let's fight that bias!</p>
+      <button id="sendHello" class="btn secondary">BOO THE BIAS!</button>
+<label class="auto-line">
+    <input type="checkbox" id="auto_activate" />
+    <span>Activate automatically</span>
+  </label>    </div>
+    
+    <!-- DEBUG
+    <button id="clearSites" class="btn danger">Clear Saved Sites</button>
+    <pre id="output"></pre>
+    -->
+
+  </div>
+  <script src="popup.js"></script>
+  <script src="content.js"></script>
+</body>
+</html>

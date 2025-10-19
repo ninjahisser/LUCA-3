@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "ByeByeBias",
+  "name": "ByeByeBiased",
   "version": "1.6",
   "description": "Are you really that unbiased?",
   "permissions": [
@@ -23,7 +23,10 @@
     }
   ],
   "browser_action": {
-    "default_title": "Bias Filter",
-    "default_popup": "popup.html"
+    "default_title": "ByeByeBias",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "images/Icon.png"
+    }
   }
 }
