@@ -1,0 +1,27 @@
+Adobe After Effects v25.2.2 Windows 64 render log for project “portfolio_V2_stappending 5.aep”
+
+Rendering started on 18/11/2025 at 22:37:51
+
+  18/11/2025 22:37:51: Starting composition “result”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\1. Swipe to the middle\PORTFOLIO V2\result_1.mp4    18/11/2025 22:38:19: Finished composition “result”.
+
+
+  18/11/2025 22:38:19: Starting composition “stap3”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\1. Swipe to the middle\PORTFOLIO V2\stap3.mp4    18/11/2025 22:38:23: Finished composition “stap3”.
+
+
+  18/11/2025 22:38:23: Starting composition “stap2”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\1. Swipe to the middle\PORTFOLIO V2\stap2.mp4    18/11/2025 22:38:25: Finished composition “stap2”.
+
+
+  18/11/2025 22:38:25: Starting composition “stap1”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\1. Swipe to the middle\PORTFOLIO V2\stap1.mp4    18/11/2025 22:38:28: Finished composition “stap1”.
+
+
+  Total Time Elapsed: 37 Seconds
+Log closed on 18/11/2025 at 22:38:28
+
