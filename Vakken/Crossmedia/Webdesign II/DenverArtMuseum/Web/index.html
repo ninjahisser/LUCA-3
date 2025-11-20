@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denver Art Museum</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style/style.css">
+</head>
+
+<body>
+    <video id="bgVideo" class="bg-video" src="Assets/ShowcaseVideo.mp4" autoplay muted loop playsinline
+        poster="Assets/OnView/onview_1.jpg"></video>
+    <div class="bg-overlay" aria-hidden="true"></div>
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="brand">Denver<br>Art<br>Museum</div>
+            <nav class="main-nav">
+                <a href="#on-view">On View</a>
+                <a href="#events">Events</a>
+                <a href="#classes">Classes</a>
+                <a href="#blog">Blog</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <section class="hero">
+            <div class="container hero-inner">
+                <h1 class="hero-title">Denver
+                    <span>Art</span>
+                    Museum
+                </h1>
+                <p class="hero-sub">23 Oct — open 10 am – 5 pm</p>
+                <a class="btn btn-ghost" href="#tickets">Get a Ticket</a>
+            </div>
+        </section>
+        <section id="on-view" class="on-view">
+            <h2 class="section-title">What's on view?</h2>
+            <div class="grid two-col">
+                <figure class="card large-card">
+                    <img src="Assets/OnView/onview_15.jpg" alt="Wild Things">
+                    <figcaption>
+                        <h3>Wild Things</h3>
+                        <p class="muted">The Art of Maurice Sendak</p>
+                    </figcaption>
+                </figure>
+
+                <div class="stack-right">
+                    <figure class="card small-card">
+                        <img src="Assets/OnView/onview_5.jpg" alt="Composing Color">
+                        <figcaption>
+                            <h3>Composing Color</h3>
+                            <p class="muted">Paintings by Peter Vanden</p>
+                        </figcaption>
+                    </figure>
+
+                    <figure class="card small-card">
+                        <img src="Assets/OnView/onview_6.jpg" alt="Tokiko Ueyama">
+                        <figcaption>
+                            <h3>The Life and Art of Tokiko Ueyama</h3>
+                            <p class="muted">A closer look at furniture and design</p>
+                        </figcaption>
+                    </figure>
+                </div>
+
+                <figure class="card large-card">
+                    <img src="Assets/OnView/onview_9.jpg" alt="Wild Things">
+                    <figcaption>
+                        <h3>Perfectly Imperfect</h3>
+                        <p class="muted">Korean Buncheong Ceramics</p>
+                    </figcaption>
+                </figure>
+
+                <figure class="card large-card">
+                    <img src="Assets/OnView/onview_7.jpg" alt="Wild Things">
+                    <figcaption>
+                        <h3>Have a seat</h3>
+                        <p class="muted">Mexican Chair Design Today</p>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section id="events" class="events">
+            <h2 class="section-title">Upcoming events</h2>
+            <div class="events-grid">
+                <figure class="event-card">
+                    <img src="Assets/OnView/onview_10.jpg" alt="Art Emergency">
+                    <figcaption>
+                        <h3>Art Emergency: Sonderak Edition</h3>
+                        <p class="muted">Oct 23 — Special program with live drawing</p>
+                    </figcaption>
+                </figure>
+
+                <aside class="event-list">
+                    <div class="mini-calendar">
+                        <ul>
+                            <li>Oct 23 — Art Emergency</li>
+                            <li>Oct 24 — Gallery Talk</li>
+                            <li>Oct 29 — Family Workshop</li>
+                        </ul>
+                        <a class="btn btn-outline" href="#calendar">View Calendar</a>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section id="classes" class="classes">
+            <h2 class="section-title">Creative classes</h2>
+            <div class="classes-grid">
+                <figure class="card">
+                    <img src="Assets/CreativeClasses/creative_class_1.jpg" alt="Tapestry Weaving">
+                    <figcaption>
+                        <h3>Textiles: Tapestry Weaving</h3>
+                        <p class="muted">A four-week class</p>
+                        <a class="btn btn-ghost" href="#learn">Learn more</a>
+                    </figcaption>
+                </figure>
+
+                <figure class="card small-card">
+                    <img src="Assets/CreativeClasses/creative_class_2.jpg" alt="Sculpture Basics">
+                    <figcaption>
+                        <h3>Sculpture Basics</h3>
+                        <p class="muted">Intro workshop</p>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section id="blog" class="blog">
+            <h2 class="section-title">Stories from the Blog</h2>
+            <div class="blog-grid">
+                <figure class="post-card card">
+                    <img src="Assets/BlogFotos/blog_12.jpg" alt="Wild Things preview">
+                    <figcaption>
+                        <h3>Plan Your Visit to Wild Things:
+                            The Art of Maurice Sendak</h3>
+                        <p class="muted">Tickets, dining, parking, and other info to enhance your visit.</p>
+                    </figcaption>
+                </figure>
+                <figure class="post-card card">
+                    <img src="Assets/BlogFotos/blog_11.jpg" alt="Print workshop">
+                    <figcaption>
+                        <h3>Maurice Sendak’s Dogs Were
+                            the Love of His Life</h3>
+                        <p class="muted">His dog Jennie appeared in nearly all of his books from 1954 to 1967.</p>
+                    </figcaption>
+                </figure>
+                <figure class="post-card card">
+                    <img src="Assets/BlogFotos/blog_7.jpg" alt="Curator talk">
+                    <figcaption>
+                        <h3>
+                            20 Quotes by Maurice Sendak </h3>
+                        <p class="muted">In honor of his birthday and the upcoming exhibition, we gathered 20 of our
+                            favorite quotes. </p>
+                    </figcaption>
+                </figure>
+            </div>
+            <div class="center" style="margin-top:18px">
+                <a class="btn btn-outline" href="#blog-all">View blog</a>
+            </div>
+        </section>
+
+        <section id="discover" class="discover">
+            <h2 class="section-title">Discover even more</h2>
+            <div class="discover-grid">
+                <figure class="card">
+                    <img src="Assets/Activities/activity_2.jpg" alt="Shop">
+                    <figcaption>
+                        <h3>Shop</h3>
+                        <p class="muted">Visit the museum shop for books and gifts</p>
+                        <a class="btn btn-ghost" href="#shop">Visit Online Shop</a>
+                    </figcaption>
+                </figure>
+                <figure class="card">
+                    <img src="Assets/Activities/activity_1.jpg" alt="Family programs">
+                    <figcaption>
+                        <h3>Free for kids</h3>
+                        <p class="muted">Family programs and hands-on activities</p>
+                        <a class="btn btn-ghost" href="#kids">View family programs</a>
+                    </figcaption>
+                </figure>
+                <figure class="card">
+                    <img src="Assets/Activities/activity_3.jpg" alt="Eat at The Ponti">
+                    <figcaption>
+                        <h3>Eat at The Ponti</h3>
+                        <p class="muted">Cafe and dining options on site</p>
+                        <a class="btn btn-ghost" href="#dining">Learn more</a>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section id="support" class="support">
+            <h2 class="section-title">Support us</h2>
+            <div class="grid two-col">
+                <figure class="card" style="margin:0">
+                    <img src="Assets/OnView/onview_11.jpg" alt="Support image">
+                </figure>
+                <div style="display:flex;flex-direction:column;justify-content:center;gap:14px">
+                    <div>
+                        <h3>Daily free admission</h3>
+                        <p class="muted">We offer free or discounted admission programs supported by donors.</p>
+                    </div>
+                    <div>
+                        <h3>Enjoy discounts</h3>
+                        <p class="muted">Members receive discounts in the shop and cafe.</p>
+                    </div>
+                    <div>
+                        <h3>Share with family</h3>
+                        <p class="muted">Bring loved ones and explore together.</p>
+                    </div>
+                    <div style="display:flex;gap:10px;margin-top:6px">
+                        <a class="btn btn-ghost" href="#membership">Member login</a>
+                        <a class="btn btn-outline" href="#donate">Learn more</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="share" class="share">
+            <h2 class="section-title">Share your visit with #DenverArtMuseum</h2>
+            <div class="discover-grid" style="margin-bottom:20px">
+                <figure class="card"><img src="Assets/Socials_DenverArtMuseum/social_1.png" alt="visit1"></figure>
+                <figure class="card"><img src="Assets/Socials_DenverArtMuseum/social_2.png" alt="visit2"></figure>
+                <figure class="card"><img src="Assets/Socials_DenverArtMuseum/social_3.png" alt="visit3"></figure>
+                <figure class="card"><img src="Assets/Socials_DenverArtMuseum/social_4.png" alt="visit3"></figure>
+                <figure class="card"><img src="Assets/Socials_DenverArtMuseum/social_5.png" alt="visit3"></figure>
+                <figure class="card"><img src="Assets/Socials_DenverArtMuseum/social_6.png" alt="visit3"></figure>
+            </div>
+            <div class="center"
+                style="margin-top:6px;gap:14px;display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;gap:12px;align-items:center">
+                    <a href="#" class="muted">Instagram</a>
+                    <a href="#" class="muted">Facebook</a>
+                    <a href="#" class="muted">Twitter</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="container footer-inner">
+        <div class="footer-col">
+            <h4>Contact</h4>
+            <p>Denver Art Museum</p>
+            <p>100 W. 14th Avenue Parkway, Denver, CO 80204</p>
+        </div>
+        <div class="footer-col">
+            <h4>Newsletter</h4>
+            <form>
+                <input type="email" placeholder="Email address">
+                <button class="btn btn-ghost" type="submit">Subscribe</button>
+            </form>
+        </div>
+    </footer>
+
+    <script src="js/main.js" defer></script>
+</body>
+
+</html>
