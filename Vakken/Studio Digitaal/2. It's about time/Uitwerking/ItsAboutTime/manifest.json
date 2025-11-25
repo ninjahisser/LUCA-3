@@ -1,0 +1,10 @@
+{
+    "Clocks": {
+        "BeadsClock": {
+            "files": [
+                "0-24H-Beadklok.json",
+                "1-1H-Beadklok.json"
+            ]
+        }
+    }
+}

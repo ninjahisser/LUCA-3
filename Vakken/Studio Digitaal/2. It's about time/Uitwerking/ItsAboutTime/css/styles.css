@@ -1,0 +1,31 @@
+body{
+    background-color: black;
+}
+
+.anim{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+/* Time override panel */
+.time-override{
+    position: fixed;
+    right: 12px;
+    top: 12px;
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 8px 10px;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+}
+.time-override .inputs{ display:flex; gap:8px; align-items:center; margin-top:6px; }
+.time-override input[type="number"]{ width:56px; }
+.time-override .buttons{ margin-top:8px; display:flex; gap:8px; }
+.time-override button{ padding:4px 8px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:4px; cursor:pointer }
+.time-override label{ display:flex; gap:6px; align-items:center }

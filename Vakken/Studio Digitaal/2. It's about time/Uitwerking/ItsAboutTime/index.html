@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+     <link rel="stylesheet" href="css/styles.css"> 
+</head>
+<body>
+
+<div id="player"></div>
+<div id="clock"></div>
+
+<!-- Time override UI for testing -->
+<div id="time-override" class="time-override">
+    <label><input type="checkbox" id="override-enable"> Override time</label>
+    <div class="inputs">
+        <label>Hour <input id="override-hour" type="number" min="0" max="23" value="12"></label>
+        <label>Minute <input id="override-minute" type="number" min="0" max="59" value="30"></label>
+        <label>Second <input id="override-second" type="number" min="0" max="59" value="0"></label>
+    </div>
+    <div class="buttons">
+        <button id="override-now">Set to Now</button>
+        <button id="override-clear">Clear</button>
+    </div>
+</div>
+
+</body>
+<script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.7.1/dist/dotlottie-wc.js" type="module"></script>
+<script type="module" src="js/main.js"></script>
+</html>
