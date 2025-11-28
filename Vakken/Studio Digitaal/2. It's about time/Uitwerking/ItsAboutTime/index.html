@@ -23,9 +23,24 @@
         <button id="override-now">Set to Now</button>
         <button id="override-clear">Clear</button>
     </div>
+    <div class="speed-control">
+        <label>Speed <span id="speed-value">1x</span></label>
+        <input id="override-speed" type="range" min="1" max="100" step="1" value="1">
+    </div>
+</div>
+
+<!-- Clock controls -->
+<div id="clock-controls" class="clock-controls">
+    <button id="prev-clock" title="Previous clock">◀</button>
+    <span id="current-clock" class="current-clock">BeadsClock</span>
+    <button id="next-clock" title="Next clock">▶</button>
 </div>
 
 </body>
 <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.7.1/dist/dotlottie-wc.js" type="module"></script>
 <script type="module" src="js/main.js"></script>
+</head>
+<!-- MediaPipe Hands and Camera utils -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 </html>

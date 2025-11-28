@@ -11,6 +11,7 @@ body{
 
 /* Time override panel */
 .time-override{
+    /* hidden by default; toggle with Space */
     position: fixed;
     right: 12px;
     top: 12px;
@@ -24,8 +25,24 @@ body{
     backdrop-filter: blur(4px);
     z-index: 9999;
 }
+
+/* Hidden by default: debug UI (time override) and clock selector are part of debug UI */
+#time-override, #clock-controls { display: none; }
+
+/* When body has .debug-shown, reveal the debug UI */
+body.debug-shown #time-override { display: block; }
+body.debug-shown #clock-controls { display: flex; }
 .time-override .inputs{ display:flex; gap:8px; align-items:center; margin-top:6px; }
 .time-override input[type="number"]{ width:56px; }
 .time-override .buttons{ margin-top:8px; display:flex; gap:8px; }
 .time-override button{ padding:4px 8px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:4px; cursor:pointer }
 .time-override label{ display:flex; gap:6px; align-items:center }
+
+.time-override .speed-control{ margin-top:8px; display:flex; gap:8px; align-items:center }
+.time-override .speed-control input[type="range"]{ width:140px }
+.time-override .speed-control #speed-value{ min-width:36px; display:inline-block }
+
+/* Clock controls (prev/next) */
+.clock-controls{ position: fixed; left: 12px; top: 12px; display:flex; gap:8px; align-items:center; z-index:9999 }
+.clock-controls button{ background: rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.08); padding:6px 10px; border-radius:6px; cursor:pointer }
+.clock-controls .current-clock{ color:#fff; font-size:14px; padding:4px 8px; background: rgba(0,0,0,0.3); border-radius:6px }
