@@ -189,23 +189,61 @@ async function init() {
     }
 
     // navigation
-    let currentApply = null; // function to call to update frames for current clock
+    let currentApply = null;
     let rafId = null;
+    let isTransitioning = false;
 
-    async function doShowClock(index) {
-        // await showClock to finish and get its control object
+    async function doShowClock(index, direction = 'none') {
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        const clockElement = document.getElementById('clock');
+        
+        // Apply exit animation to current clock
+        if (direction !== 'none') {
+            const exitClass = direction === 'next' ? 'clock-slide-out-left' : 'clock-slide-out-right';
+            clockElement.className = exitClass;
+            
+            // Wait for exit animation to complete
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        // Load new clock
         const control = await showClock(index);
         currentApply = control && control.applyTimeToAnims ? control.applyTimeToAnims : null;
-        // run immediately
+        
+        // Apply enter animation
+        if (direction !== 'none') {
+            const enterClass = direction === 'next' ? 'clock-slide-in-right' : 'clock-slide-in-left';
+            clockElement.className = enterClass;
+            
+            // Wait for enter animation to complete
+            await new Promise(resolve => setTimeout(resolve, 500));
+            clockElement.className = '';
+        }
+
+        // Run immediately
         if (currentApply) currentApply();
-        // restart rAF loop
+        
+        // Restart rAF loop
         if (rafId) cancelAnimationFrame(rafId);
         const loop = () => { if (currentApply) currentApply(); rafId = requestAnimationFrame(loop); };
         rafId = requestAnimationFrame(loop);
+        
+        isTransitioning = false;
     }
 
-    function nextClock() { currentIndex = (currentIndex + 1) % clocks.length; doShowClock(currentIndex); }
-    function prevClock() { currentIndex = (currentIndex - 1 + clocks.length) % clocks.length; doShowClock(currentIndex); }
+    function nextClock() { 
+        if (isTransitioning) return;
+        currentIndex = (currentIndex + 1) % clocks.length; 
+        doShowClock(currentIndex, 'next'); 
+    }
+    
+    function prevClock() { 
+        if (isTransitioning) return;
+        currentIndex = (currentIndex - 1 + clocks.length) % clocks.length; 
+        doShowClock(currentIndex, 'prev'); 
+    }
 
     // wire up buttons and keyboard
     const prevBtn = document.getElementById('prev-clock');
@@ -299,7 +337,7 @@ async function init() {
         if (currentApply) currentApply();
     });
 
-    // --- Hand Tracking / Gesture Swipe Setup (TensorFlow.js HandPose) ---
+    // --- Hand Tracking / Gesture Swipe Setup (handtrack.js) ---
     async function loadScript(src) {
         return new Promise((resolve, reject) => {
             if (document.querySelector(`script[src="${src}"]`)) return resolve();
@@ -316,34 +354,29 @@ async function init() {
         if (!container) {
             container = document.createElement('div');
             container.id = 'hands-debug';
-            container.style.cssText = 'position:relative;display:flex;flex-direction:column;gap:4px;padding:4px;background:#111;color:#fff;font:12px/1.4 monospace;max-width:340px;';
+            container.style.cssText = 'position:fixed;bottom:12px;right:12px;display:flex;flex-direction:column;gap:8px;padding:12px;background:rgba(0,0,0,0.85);color:#fff;font:14px/1.4 system-ui,sans-serif;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.5);';
             container.className = 'hands-debug';
+            
             const title = document.createElement('div');
-            title.textContent = 'Hand Tracking';
-            title.style.fontWeight = 'bold';
+            title.textContent = '✋ Hand Tracking';
+            title.style.cssText = 'font-weight:600;font-size:16px;margin-bottom:4px;';
+            
             const status = document.createElement('div');
             status.id = 'hands-status';
             status.textContent = 'Loading...';
-            const video = document.createElement('video');
-            video.id = 'hands-video';
-            video.playsInline = true;
-            video.muted = true;
-            video.autoplay = true;
-            video.style.cssText = 'width:320px;height:240px;background:#000;';
+            status.style.cssText = 'font-size:13px;opacity:0.8;margin-bottom:8px;';
+            
             const canvas = document.createElement('canvas');
             canvas.id = 'hands-canvas';
-            canvas.width = 320;
-            canvas.height = 240;
-            canvas.style.cssText = 'position:absolute;left:0;top:0;width:320px;height:240px;pointer-events:none;';
-            const videoWrap = document.createElement('div');
-            videoWrap.style.cssText = 'position:relative;width:320px;height:240px;';
-            videoWrap.appendChild(video);
-            videoWrap.appendChild(canvas);
+            canvas.width = 400;
+            canvas.height = 300;
+            canvas.style.cssText = 'border-radius:8px;width:400px;height:300px;background:#000;';
+            
             container.appendChild(title);
-            container.appendChild(videoWrap);
             container.appendChild(status);
-            const host = document.getElementById('debug-panel') || document.body;
-            host.appendChild(container);
+            container.appendChild(canvas);
+            
+            document.body.appendChild(container);
         }
         return container;
     }
@@ -351,7 +384,7 @@ async function init() {
     function toggleHandDebugVisibility() {
         const shown = document.body && document.body.classList.contains('debug-shown');
         const el = document.getElementById('hands-debug');
-        if (el) el.style.display = shown ? 'block' : 'none';
+        if (el) el.style.display = shown ? 'flex' : 'none';
     }
 
     const bodyObserver = new MutationObserver(toggleHandDebugVisibility);
@@ -360,9 +393,44 @@ async function init() {
     // Swipe detection state
     let swipeHistory = [];
     let lastSwipeTs = 0;
-    const SWIPE_WINDOW_MS = 500;
-    const SWIPE_MIN_DELTA = 100; // pixels
-    const SWIPE_COOLDOWN = 1000;
+    let SWIPE_WINDOW_MS = 400;
+    let SWIPE_MIN_DELTA = 120;
+    let SWIPE_COOLDOWN = 1000;
+    let SWIPE_THRESHOLD = 4;
+    let SCORE_THRESHOLD = 0.79;
+
+    // Load settings from localStorage
+    function loadSwipeSettings() {
+        try {
+            const saved = localStorage.getItem('swipeSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                SWIPE_WINDOW_MS = settings.window ?? 400;
+                SWIPE_MIN_DELTA = settings.minDelta ?? 120;
+                SWIPE_COOLDOWN = settings.cooldown ?? 1000;
+                SWIPE_THRESHOLD = settings.threshold ?? 4;
+                SCORE_THRESHOLD = settings.scoreThreshold ?? 0.79;
+            }
+        } catch (e) {
+            console.warn('Failed to load swipe settings:', e);
+        }
+    }
+
+    function saveSwipeSettings() {
+        try {
+            localStorage.setItem('swipeSettings', JSON.stringify({
+                window: SWIPE_WINDOW_MS,
+                minDelta: SWIPE_MIN_DELTA,
+                cooldown: SWIPE_COOLDOWN,
+                threshold: SWIPE_THRESHOLD,
+                scoreThreshold: SCORE_THRESHOLD
+            }));
+        } catch (e) {
+            console.warn('Failed to save swipe settings:', e);
+        }
+    }
+
+    loadSwipeSettings();
 
     function detectSwipe(x) {
         const now = performance.now();
@@ -370,18 +438,18 @@ async function init() {
         swipeHistory = swipeHistory.filter(p => now - p.t <= SWIPE_WINDOW_MS);
         if (now - lastSwipeTs < SWIPE_COOLDOWN) return;
 
-        if (swipeHistory.length >= 5) {
+        if (swipeHistory.length >= SWIPE_THRESHOLD) {
             const first = swipeHistory[0];
             const last = swipeHistory[swipeHistory.length - 1];
             const delta = last.x - first.x;
             if (delta > SWIPE_MIN_DELTA) {
                 lastSwipeTs = now;
                 prevClock();
-                console.log('Swipe right detected');
+                console.log('👉 Swipe right detected');
             } else if (delta < -SWIPE_MIN_DELTA) {
                 lastSwipeTs = now;
                 nextClock();
-                console.log('Swipe left detected');
+                console.log('👈 Swipe left detected');
             }
         }
     }
@@ -391,109 +459,189 @@ async function init() {
         toggleHandDebugVisibility();
 
         const statusEl = document.getElementById('hands-status');
-        const videoEl = document.getElementById('hands-video');
         const canvasEl = document.getElementById('hands-canvas');
         const ctx = canvasEl.getContext('2d');
 
+        // Add settings panel after canvas
+        const settingsPanel = document.createElement('div');
+        settingsPanel.style.cssText = 'background:rgba(255,255,255,0.05);padding:8px;border-radius:6px;font-size:12px;margin-top:8px;';
+        
+        const settingsTitle = document.createElement('div');
+        settingsTitle.textContent = '⚙️ Swipe Settings';
+        settingsTitle.style.cssText = 'font-weight:600;margin-bottom:8px;font-size:14px;';
+        settingsPanel.appendChild(settingsTitle);
+        
+        // Helper to create slider
+        function createSlider(label, id, min, max, step, value) {
+            const group = document.createElement('div');
+            group.style.cssText = 'margin-bottom:8px;';
+            const labelEl = document.createElement('label');
+            labelEl.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px;';
+            labelEl.innerHTML = `<span>${label}</span><span id="${id}-value">${value}</span>`;
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.id = id;
+            slider.min = min;
+            slider.max = max;
+            slider.step = step;
+            slider.value = value;
+            slider.style.cssText = 'width:100%;';
+            slider.addEventListener('input', (e) => {
+                document.getElementById(`${id}-value`).textContent = e.target.value;
+            });
+            group.appendChild(labelEl);
+            group.appendChild(slider);
+            return group;
+        }
+        
+        settingsPanel.appendChild(createSlider('Window (ms)', 'swipe-window', 1, 1000, 1, SWIPE_WINDOW_MS));
+        settingsPanel.appendChild(createSlider('Min Delta (px)', 'swipe-delta', 1, 300, 1, SWIPE_MIN_DELTA));
+        settingsPanel.appendChild(createSlider('Cooldown (ms)', 'swipe-cooldown', 1, 3000, 1, SWIPE_COOLDOWN));
+        settingsPanel.appendChild(createSlider('Threshold (pts)', 'swipe-threshold', 1, 10, 1, SWIPE_THRESHOLD));
+        
+        // Score threshold with note
+        const scoreNote = document.createElement('div');
+        scoreNote.style.cssText = 'font-size:11px;opacity:0.6;margin-bottom:4px;';
+        scoreNote.textContent = '⚠️ Score Threshold requires reload to apply';
+        settingsPanel.appendChild(scoreNote);
+        settingsPanel.appendChild(createSlider('Score Threshold', 'score-threshold', 0.01, 1.0, 0.01, SCORE_THRESHOLD));
+        
+        const applyScoreBtn = document.createElement('button');
+        applyScoreBtn.textContent = '✓ Apply Score Threshold';
+        applyScoreBtn.style.cssText = 'width:100%;padding:6px;background:rgba(0,255,0,0.2);color:#fff;border:1px solid rgba(0,255,0,0.3);border-radius:4px;cursor:pointer;margin-top:4px;margin-bottom:8px;';
+        applyScoreBtn.onclick = () => {
+            location.reload();
+        };
+        settingsPanel.appendChild(applyScoreBtn);
+        
+        const resetBtn = document.createElement('button');
+        resetBtn.textContent = '🔄 Reset All Settings';
+        resetBtn.style.cssText = 'width:100%;padding:6px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:4px;cursor:pointer;margin-top:8px;';
+        resetBtn.onclick = () => {
+            localStorage.removeItem('swipeSettings');
+            location.reload();
+        };
+        settingsPanel.appendChild(resetBtn);
+        
+        document.getElementById('hands-debug').appendChild(settingsPanel);
+        
+        // Wire up settings
+        document.getElementById('swipe-window').addEventListener('change', (e) => {
+            SWIPE_WINDOW_MS = parseInt(e.target.value);
+            saveSwipeSettings();
+        });
+        document.getElementById('swipe-delta').addEventListener('change', (e) => {
+            SWIPE_MIN_DELTA = parseInt(e.target.value);
+            saveSwipeSettings();
+        });
+        document.getElementById('swipe-cooldown').addEventListener('change', (e) => {
+            SWIPE_COOLDOWN = parseInt(e.target.value);
+            saveSwipeSettings();
+        });
+        document.getElementById('swipe-threshold').addEventListener('change', (e) => {
+            SWIPE_THRESHOLD = parseInt(e.target.value);
+            saveSwipeSettings();
+        });
+        document.getElementById('score-threshold').addEventListener('change', (e) => {
+            SCORE_THRESHOLD = parseFloat(e.target.value);
+            saveSwipeSettings();
+        });
+
         try {
-            // Load TensorFlow.js and HandPose with correct CDN URLs
-            if (statusEl) statusEl.textContent = 'Loading TensorFlow...';
-            await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core');
-            await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter');
-            await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl');
-            await loadScript('https://unpkg.com/@tensorflow-models/hand-pose-detection@2.1.0');
+            // Load handtrack.js standalone
+            if (statusEl) statusEl.textContent = '⏳ Loading model...';
+            await loadScript('https://cdn.jsdelivr.net/npm/handtrackjs@latest/dist/handtrack.min.js');
             
-            if (statusEl) statusEl.textContent = 'Creating detector...';
+            // Wait for handTrack global
+            let attempts = 0;
+            while (!window.handTrack && attempts < 100) {
+                await new Promise(r => setTimeout(r, 50));
+                attempts++;
+            }
             
-            await tf.ready();
-            
-            const model = handPoseDetection.SupportedModels.MediaPipeHands;
-            const detector = await handPoseDetection.createDetector(model, {
-                runtime: 'tfjs',
-                modelType: 'lite'
-            });
-            
-            if (statusEl) statusEl.textContent = 'Model loaded';
+            if (!window.handTrack) {
+                throw new Error('handTrack library not loaded');
+            }
 
-            // Start camera
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { width: 320, height: 240, facingMode: 'user' }, 
-                audio: false 
-            });
-            videoEl.srcObject = stream;
-            await videoEl.play();
-            
-            if (statusEl) statusEl.textContent = 'Camera ready';
+            const modelParams = {
+                flipHorizontal: true,
+                maxNumBoxes: 2,
+                iouThreshold: 0.5,
+                scoreThreshold: SCORE_THRESHOLD,
+            };
 
-            async function runDetection() {
-                try {
-                    const hands = await detector.estimateHands(videoEl);
+            if (statusEl) statusEl.textContent = '🧠 Loading AI model...';
+            const model = await window.handTrack.load(modelParams);
+            if (statusEl) statusEl.textContent = '📹 Starting camera...';
+
+            // Start video
+            const video = document.createElement('video');
+            video.style.display = 'none';
+            document.body.appendChild(video);
+            
+            await window.handTrack.startVideo(video);
+            if (statusEl) statusEl.textContent = '✅ Ready - Show your hand!';
+
+            let isRunning = false;
+
+            function runDetection() {
+                if (isRunning) return;
+                isRunning = true;
+
+                model.detect(video).then(predictions => {
                     const shown = document.body && document.body.classList.contains('debug-shown');
                     
-                    if (shown) {
-                        // Draw video frame
-                        ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
-                        
-                        // Draw hand landmarks
-                        if (hands.length > 0) {
-                            hands.forEach(hand => {
-                                const keypoints = hand.keypoints;
-                                
-                                // Draw points
-                                ctx.fillStyle = '#0f0';
-                                keypoints.forEach(kp => {
-                                    ctx.beginPath();
-                                    ctx.arc(kp.x, kp.y, 4, 0, Math.PI * 2);
-                                    ctx.fill();
-                                });
-                                
-                                // Draw connections
-                                ctx.strokeStyle = '#0f0';
-                                ctx.lineWidth = 2;
-                                const fingers = [
-                                    [0, 1, 2, 3, 4],
-                                    [0, 5, 6, 7, 8],
-                                    [0, 9, 10, 11, 12],
-                                    [0, 13, 14, 15, 16],
-                                    [0, 17, 18, 19, 20]
-                                ];
-                                fingers.forEach(finger => {
-                                    for (let i = 0; i < finger.length - 1; i++) {
-                                        const kp1 = keypoints[finger[i]];
-                                        const kp2 = keypoints[finger[i + 1]];
-                                        ctx.beginPath();
-                                        ctx.moveTo(kp1.x, kp1.y);
-                                        ctx.lineTo(kp2.x, kp2.y);
-                                        ctx.stroke();
-                                    }
-                                });
-                                
-                                // Use wrist position for swipe
-                                const wrist = keypoints[0];
-                                detectSwipe(wrist.x);
-                            });
-                        }
-
-                        if (statusEl) statusEl.textContent = hands.length ? `${hands.length} hand(s)` : 'No hands';
-                    } else {
-                        ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+                    // Always process detections for swipe, even if debug hidden
+                    const openHand = predictions.find(p => p.label === 'open');
+                    if (openHand) {
+                        const [x, y, w, h] = openHand.bbox;
+                        const centerX = x + w / 2;
+                        detectSwipe(centerX);
                     }
-                } catch (e) {
-                    console.warn('Detection error:', e);
-                }
+                    
+                    // Only draw to canvas when debug is shown
+                    if (shown) {
+                        // Draw video feed
+                        ctx.drawImage(video, 0, 0, canvasEl.width, canvasEl.height);
+                        
+                        // Draw predictions with nice styling
+                        model.renderPredictions(predictions, canvasEl, ctx, video);
+                        
+                        if (statusEl) {
+                            if (predictions.length > 0) {
+                                statusEl.textContent = `👋 ${predictions.length} hand(s) detected`;
+                            } else {
+                                statusEl.textContent = '🖐️ Show your hand to swipe';
+                            }
+                        }
+                        
+                        // Draw swipe indicator
+                        if (openHand) {
+                            const [x, y, w, h] = openHand.bbox;
+                            const centerX = x + w / 2;
+                            ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+                            ctx.fillRect(centerX - 5, y, 10, h);
+                        }
+                    }
 
-                requestAnimationFrame(runDetection);
+                    isRunning = false;
+                    requestAnimationFrame(runDetection);
+                }).catch(err => {
+                    console.warn('Detection error:', err);
+                    isRunning = false;
+                    requestAnimationFrame(runDetection);
+                });
             }
 
             runDetection();
 
         } catch (e) {
             console.warn('Hand tracking setup failed:', e);
-            if (statusEl) statusEl.textContent = 'Setup failed: ' + (e.message || 'unknown');
+            if (statusEl) statusEl.textContent = '❌ Setup failed: ' + (e.message || 'unknown');
         }
     }
 
     // Ensure hand tracking and clock both start
     setupHandTracking();
-    doShowClock(currentIndex);
+    doShowClock(currentIndex, 'none');
 }
