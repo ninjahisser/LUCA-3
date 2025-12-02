@@ -48,6 +48,13 @@
                 "2-1M-olieklok.json"
             ]
         },
+        "BalletjesKlokken": {
+            "files": [
+                "0-24H-bolletjes_klok.json",
+                "1-1M-bolletjes_klok.json",
+                "2-1S-bolletjes_klok.json"
+            ]
+        },
         "TijdsgolfKlok": {
             "files": [
                 "0-24H-tijdsgolfklok.json",
