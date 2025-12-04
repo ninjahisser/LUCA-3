@@ -6,6 +6,20 @@
                 "1-1H-Beadklok.json"
             ]
         },
+        "digitaleklok": {
+            "files": [
+                "0-24H-digiklok.json",
+                "1-1H-digiklok.json",
+                "2-1S-digiklok.json"
+            ]
+        },
+        "stationklok": {
+            "files": [
+                "0-24H-stationklok.json",
+                "1-1H-stationklok.json",
+                "2-1S-stationklok.json"
+            ]
+        },
         "AstronomischeKlok": {
             "files": [
                 "0-1M-astronomischeklok.json",
