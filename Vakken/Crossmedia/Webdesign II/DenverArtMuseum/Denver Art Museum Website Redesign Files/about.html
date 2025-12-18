@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>About — Denver Art Museum</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body>
+    <video id="bgVideo" class="bg-video" src="Assets/ShowcaseVideo.mp4" autoplay muted loop playsinline poster="Assets/OnView/onview_2.jpg"></video>
+    <div class="bg-overlay" aria-hidden="true"></div>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="brand">Denver<br>Art<br>Museum</div>
+            <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="index.html#on-view">On View</a>
+                <a href="index.html#events">Events</a>
+                <a href="index.html#classes">Classes</a>
+                <a href="index.html#blog">Blog</a>
+                <a href="about.html" aria-current="page">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <section class="hero">
+            <div class="container hero-inner">
+                <h1 class="hero-title">About
+                    <span>Denver</span>
+                    Art Museum
+                </h1>
+                <p class="hero-sub">Our mission is to connect people with the power of art.</p>
+            </div>
+        </section>
+
+        <section class="about-grid">
+            <h2 class="section-title">Our Story</h2>
+            <div class="grid two-col">
+                <div>
+                    <p>The Denver Art Museum has a long history of serving the community through exhibitions, education, and public programs. We present work from across the globe and celebrate the creativity that connects us.</p>
+                    <p class="muted">Open daily — see the calendar for hours and special programs.</p>
+                </div>
+
+                <figure class="card">
+                    <img src="Assets/OnView/onview_3.jpg" alt="Gallery visitors">
+                    <figcaption>
+                        <h3>Visit the galleries</h3>
+                        <p class="muted">Explore rotating exhibitions and permanent collections.</p>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="container footer-inner">
+        <div class="footer-col">
+            <h4>Contact</h4>
+            <p>Denver Art Museum</p>
+            <p>100 W. 14th Avenue Parkway, Denver, CO 80204</p>
+        </div>
+        <div class="footer-col">
+            <h4>Newsletter</h4>
+            <form>
+                <input type="email" placeholder="Email address">
+                <button class="btn btn-ghost" type="submit">Subscribe</button>
+            </form>
+        </div>
+    </footer>
+
+    <script src="js/main.js" defer></script>
+</body>
+</html>

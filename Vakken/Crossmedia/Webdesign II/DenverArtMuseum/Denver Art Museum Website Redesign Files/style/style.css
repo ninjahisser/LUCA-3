@@ -1,0 +1,522 @@
+:root {
+    --big-font: "Prompt", sans-serif;
+    --normal-font: "Bricolage Grotesque", sans-serif;
+    --bg-color: #33343a;
+    --muted: #bdbdbd;
+    --accent: #bcff78;
+    --accent-2: #688cff;
+    --card-bg: rgba(20, 20, 20, 0.6);
+    --gap: 40px;
+}
+
+* {
+    box-sizing: border-box
+}
+
+html,
+body {
+    height: 100%
+}
+
+body {
+    margin: 0;
+    font-family: var(--normal-font);
+    background: linear-gradient(180deg, #3b3b3f, #2e2e30);
+    color: #eee
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    background: transparent;
+    padding: 14px 0;
+    z-index: 20
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.brand {
+    font-family: var(--big-font);
+    font-size: 20px;
+    line-height: 0.9
+}
+
+.main-nav a {
+    color: #ddd;
+    text-decoration: none;
+    margin-left: 16px;
+    font-size: 14px
+}
+
+.bg-video {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 140%;
+    height: 140%;
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+    will-change: transform;
+    pointer-events: none;
+    z-index: -2
+}
+
+.bg-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: -1;
+    pointer-events: none
+}
+
+.hero {
+    position: relative;
+    height: 520px;
+    display: flex;
+    align-items: flex-start;
+    overflow: hidden;
+    padding-top: 40px
+}
+
+.hero>.container {
+    margin-left: 0;
+    margin-right: auto;
+    max-width: 560px;
+    padding-left: 0
+}
+
+.hero-inner {
+    position: relative;
+    z-index: 2;
+    color: #fff;
+    padding: 24px 20px 40px 40px;
+    max-width: 560px;
+    text-align: left
+}
+
+.hero-title {
+    font-family: var(--big-font);
+    font-size: 64px;
+    margin: 0;
+    line-height: 0.95;
+    text-align: left
+}
+
+.hero-title span {
+    color: var(--accent);
+    display: block
+}
+
+.hero-sub {
+    color: var(--accent);
+    margin: 10px 0 18px
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 0;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 160ms ease
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    color: #fff
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    color: #fff
+}
+
+.btn:hover {
+    filter: brightness(1.06);
+    transform: translateY(-2px)
+}
+
+.btn:active {
+    transform: translateY(0);
+    filter: brightness(0.95)
+}
+
+.btn:focus {
+    outline: 3px solid rgba(188, 255, 120, 0.18);
+    outline-offset: 3px
+}
+
+.btn-ghost:hover,
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.04)
+}
+
+.btn-ghost:active,
+.btn-outline:active {
+    background: rgba(255, 255, 255, 0.02)
+}
+
+.input[type="email"] {
+    padding: 8px;
+    border-radius: 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: transparent;
+    color: #fff
+}
+
+.section-title {
+    font-family: var(--big-font);
+    font-size: 20px;
+    margin: 48px 0 18px;
+    color: #efefef
+}
+
+.main-content {
+    padding: 20px 0 80px
+}
+
+.grid.two-col {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: var(--gap);
+    align-items: start
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: var(--gap);
+    align-items: start
+}
+
+.classes-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: var(--gap)
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px
+}
+
+.discover-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px
+}
+
+.card,
+figure,
+.mini-calendar {
+    background: var(--card-bg);
+    overflow: hidden;
+    box-shadow: none;
+    border-radius: 0
+}
+
+figure img,
+.event-card img,
+.post-card img,
+.mini-card img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    display: block;
+    border-radius: 0
+}
+
+figure.large-card img {
+    height: 420px
+}
+
+figure.small-card img {
+    height: 180px
+}
+
+.post-card img {
+    height: 200px
+}
+
+.mini-card img {
+    height: 160px
+}
+
+figure figcaption {
+    padding: 12px 16px
+}
+
+figure h3,
+figure h4 {
+    margin: 0;
+    font-size: 18px
+}
+
+.muted {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 6px
+}
+
+.stack-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap)
+}
+
+.mini-calendar {
+    padding: 12px
+}
+
+.mini-calendar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px
+}
+
+.mini-calendar li {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04)
+}
+
+.footer-inner {
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+    padding: 40px 0
+}
+
+.footer-col h4 {
+    margin: 0 0 8px
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0
+}
+
+.footer-col li {
+    color: var(--muted);
+    margin: 6px 0
+}
+
+.center {
+    display: flex;
+    justify-content: center
+}
+
+@media (max-width:1000px) {
+
+    .grid.two-col,
+    .events-grid,
+    .classes-grid {
+        grid-template-columns: 1fr
+    }
+
+    .blog-grid {
+        grid-template-columns: repeat(2, 1fr)
+    }
+
+    .discover-grid {
+        grid-template-columns: repeat(2, 1fr)
+    }
+
+    .hero {
+        height: 420px
+    }
+
+    .hero-title {
+        font-size: 44px
+    }
+}
+
+@media (max-width:520px) {
+    .header-inner {
+        flex-direction: column;
+        align-items: flex-start
+    }
+
+    .brand {
+        font-size: 18px
+    }
+
+    .main-nav {
+        margin-top: 10px
+    }
+
+    .blog-grid {
+        grid-template-columns: 1fr
+    }
+
+    .discover-grid {
+        grid-template-columns: 1fr
+    }
+
+    .hero {
+        height: 360px
+    }
+
+    .hero-title {
+        font-size: 34px
+    }
+
+    .hero-inner {
+        padding-left: 16px;
+        padding-right: 16px;
+        max-width: 100%
+    }
+
+    .hero>.container {
+        max-width: none;
+        margin-left: 0;
+        padding-left: 16px
+    }
+
+    .container {
+        padding-left: 14px;
+        padding-right: 14px
+    }
+
+    nav.main-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px
+    }
+
+    nav.main-nav a {
+        font-size: 13px
+    }
+
+    .bg-video {
+        display: none
+    }
+
+    .bg-overlay {
+        background: rgba(0, 0, 0, 0.6)
+    }
+
+    figure.large-card img {
+        height: 300px
+    }
+
+    figure.small-card img,
+    .mini-card img {
+        height: 140px
+    }
+
+    .post-card img {
+        height: 160px
+    }
+
+    .hero-title {
+        line-height: 1
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bg-video {
+        display: none
+    }
+}
+
+.contact-section .card {
+    padding: 18px
+}
+
+.contact-section label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #eee
+}
+
+.contact-section input[type=text],
+.contact-section input[type=email],
+.contact-section textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: transparent;
+    color: #fff;
+    border-radius: 0
+}
+
+.contact-section textarea {
+    resize: vertical
+}
+
+.contact-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+}
+
+@media (max-width:1000px) {
+    .contact-section .grid.two-col {
+        grid-template-columns: 1fr
+    }
+}
+
+/* newsletter / small form styling for footer and share area */
+footer .footer-col form,
+.share form {
+    display: flex;
+    gap: 8px;
+    align-items: center
+}
+
+.footer-col form input[type="email"],
+.share form input[type="email"],
+.share form input[type="text"] {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    color: #fff;
+    border-radius: 3px
+}
+
+.footer-col form button,
+.share form button {
+    padding: 10px 14px;
+    border-radius: 3px
+}
+
+.footer-col form input::placeholder,
+.share form input::placeholder {
+    color: rgba(255, 255, 255, 0.6)
+}
+
+.form-status {
+    font-size: 14px;
+    margin-top: 8px;
+    color: var(--accent)
+}
+
+@media (max-width:520px) {
+
+    footer .footer-col form,
+    .share form {
+        flex-direction: column;
+        align-items: stretch
+    }
+
+    .footer-col form button,
+    .share form button {
+        width: 100%
+    }
+}
