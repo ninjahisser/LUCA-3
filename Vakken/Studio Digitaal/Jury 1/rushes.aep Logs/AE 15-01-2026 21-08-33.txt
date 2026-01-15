@@ -1,0 +1,17 @@
+Adobe After Effects v25.2.2 Windows 64 render log for project “rushes.aep”
+
+Rendering started on 15/01/2026 at 21:08:33
+
+  15/01/2026 21:08:34: Starting composition “Loop”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\Jury 1\Loop.mp4    15/01/2026 21:10:05: Finished composition “Loop”.
+
+
+  15/01/2026 21:10:05: Starting composition “Rushes”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\Jury 1\Rushes.mp4    15/01/2026 21:14:17: Finished composition “Rushes”.
+
+
+  Total Time Elapsed: 5 Min, 30 Sec
+Log closed on 15/01/2026 at 21:14:18
+

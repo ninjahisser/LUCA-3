@@ -1,0 +1,30 @@
+Adobe After Effects v25.2.2 Windows 64 render log for project “Steps.aep”
+
+Rendering started on 15/01/2026 at 19:51:01
+
+  15/01/2026 19:51:01: Starting composition “stap3”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\Jury 1\stap3.mp4    15/01/2026 19:52:49: Finished composition “stap3”.
+
+
+After Effects can’t continue: Encountered a GPU or graphics driver issue.  15/01/2026 19:52:51: Starting composition “stap2”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\Jury 1\stap2.mp4  After Effects error: Rendering error while writing to file “F:\LUCA-3\Vakken\Studio Digitaal\Jury 1\stap2.mp4”. An output module failed. The file may be damaged or corrupted. (-1610153423)  An unexpected error occurred while exporting a composition.
+
+Error Code: 9988
+
+Please restart After Effects and retry the export.  15/01/2026 19:52:56: Finished composition “stap2”.
+
+
+  15/01/2026 19:52:56: Starting composition “stap1”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\Jury 1\stap1.mp4  After Effects error: Rendering error while writing to file “F:\LUCA-3\Vakken\Studio Digitaal\Jury 1\stap1.mp4”. An output module failed. The file may be damaged or corrupted. (-1610153423)  An unexpected error occurred while exporting a composition.
+
+Error Code: 9988
+
+Please restart After Effects and retry the export.  15/01/2026 19:52:58: Finished composition “stap1”.
+
+
+  Total Time Elapsed: 1 Min, 57 Sec
+Log closed on 15/01/2026 at 19:52:58
+
