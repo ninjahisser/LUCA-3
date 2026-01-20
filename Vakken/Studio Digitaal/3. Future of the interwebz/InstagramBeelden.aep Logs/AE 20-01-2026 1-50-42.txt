@@ -1,0 +1,37 @@
+Adobe After Effects v25.2.2 Windows 64 render log for project “InstagramBeelden.aep”
+
+Rendering started on 20/01/2026 at 1:50:42
+
+  20/01/2026 1:50:42: Starting composition “Scentsync1_Post”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\3. Future of the interwebz\Scentsync1_Post.mp4    20/01/2026 1:50:55: Finished composition “Scentsync1_Post”.
+
+
+  20/01/2026 1:50:55: Starting composition “Scentsync2_Post”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\3. Future of the interwebz\Scentsync2_Post.mp4    20/01/2026 1:51:01: Finished composition “Scentsync2_Post”.
+
+
+  20/01/2026 1:51:01: Starting composition “Scentsync3_Post”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\3. Future of the interwebz\Scentsync3_Post.mp4    20/01/2026 1:51:33: Finished composition “Scentsync3_Post”.
+
+
+  20/01/2026 1:51:33: Starting composition “ScentsyncStory1”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\3. Future of the interwebz\ScentsyncStory1.mp4    20/01/2026 1:51:39: Finished composition “ScentsyncStory1”.
+
+
+  20/01/2026 1:51:39: Starting composition “ScentsyncStory2”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\3. Future of the interwebz\ScentsyncStory2.mp4    20/01/2026 1:51:46: Finished composition “ScentsyncStory2”.
+
+
+  20/01/2026 1:51:46: Starting composition “ScentsyncStory3”.
+
+  Output To: F:\LUCA-3\Vakken\Studio Digitaal\3. Future of the interwebz\ScentsyncStory3.mp4    20/01/2026 1:52:08: Finished composition “ScentsyncStory3”.
+
+
+  Total Time Elapsed: 1 Min, 22 Sec
+Log closed on 20/01/2026 at 1:52:08
+
