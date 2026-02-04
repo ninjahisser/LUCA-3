@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artikel bewerken - CMS Nieuws Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="dashboard">
+    <header>
+      <h1>Artikel bewerken</h1>
+      <nav>
+        <a href="index.html" class="nav-link">← Terug naar dashboard</a>
+      </nav>
+    </header>
+    <section class="edit-article-form">
+      <form id="editArticleForm">
+        <label for="edit-title">Titel</label>
+        <input type="text" id="edit-title" name="title" placeholder="Titel van het artikel" required />
+        <div class="components-section">
+          <h3>Artikelcomponenten</h3>
+          <div id="components-list"></div>
+          <div class="add-component-bar">
+            <label for="component-type">Component toevoegen:</label>
+            <select id="component-type">
+              <option value="text">Tekst</option>
+              <option value="image">Afbeelding</option>
+              <option value="video">Video</option>
+              <option value="button">Knop</option>
+              <option value="list">Lijst</option>
+            </select>
+            <button type="button" id="add-component-btn">Toevoegen</button>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+          <button type="button" id="preview-btn">Voorbeeld</button>
+          <button type="submit">Artikel opslaan</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <script>
+    // Article components state
+    let components = [
+      { type: 'text', value: '' }
+    ];
+    function renderComponents() {
+      const list = document.getElementById('components-list');
+      list.innerHTML = '';
+      components.forEach((comp, idx) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'component-block';
+        // Controls
+        const controls = document.createElement('div');
+        controls.className = 'component-controls';
+        if (idx > 0) {
+          const upBtn = document.createElement('button');
+          upBtn.type = 'button';
+          upBtn.textContent = '↑';
+          upBtn.title = 'Omhoog';
+          upBtn.onclick = () => { moveComponent(idx, -1); };
+          controls.appendChild(upBtn);
+        }
+        if (idx < components.length - 1) {
+          const downBtn = document.createElement('button');
+          downBtn.type = 'button';
+          downBtn.textContent = '↓';
+          downBtn.title = 'Omlaag';
+          downBtn.onclick = () => { moveComponent(idx, 1); };
+          controls.appendChild(downBtn);
+        }
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.textContent = '✕';
+        delBtn.title = 'Verwijderen';
+        delBtn.onclick = () => { removeComponent(idx); };
+        controls.appendChild(delBtn);
+        wrapper.appendChild(controls);
+        // Component type title
+        const typeTitle = document.createElement('div');
+        typeTitle.className = 'component-type-title';
+        typeTitle.textContent = getComponentTypeTitle(comp.type);
+        wrapper.appendChild(typeTitle);
+        // Component content
+        let content;
+        switch (comp.type) {
+          case 'text':
+            content = document.createElement('textarea');
+            content.value = comp.value;
+            content.className = 'component-textarea';
+            content.placeholder = 'Voer tekst in...';
+            content.oninput = e => { components[idx].value = e.target.value; };
+            break;
+          case 'image': {
+            content = document.createElement('div');
+            content.innerHTML = `
+              <input type=\"url\" class=\"component-input\" value=\"${comp.value?.url || ''}\" placeholder=\"Afbeelding URL\" />
+              <input type=\"file\" accept=\"image/*\" class=\"component-input\" style=\"margin-top:0.5rem\" />
+              <div class=\"component-preview\">${comp.value?.url ? `<img src=\"${comp.value.url}\" alt=\"Voorbeeld afbeelding\" />` : ''}</div>
+            `;
+            // Init value if needed
+            if (!comp.value || typeof comp.value !== 'object') comp.value = { url: '' };
+            const urlInput = content.querySelector('input[type="url"]');
+            const fileInput = content.querySelector('input[type="file"]');
+            urlInput.oninput = e => {
+              comp.value.url = e.target.value;
+              renderComponents();
+            };
+            fileInput.onchange = e => {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                  comp.value.url = ev.target.result;
+                  renderComponents();
+                };
+                reader.readAsDataURL(file);
+              }
+            };
+            break;
+          }
+          case 'video': {
+            // videoType: 'embed' | 'url' | 'upload'
+            if (!comp.value || typeof comp.value !== 'object') comp.value = { videoType: 'url', url: '', embed: '', file: '' };
+            content = document.createElement('div');
+            content.innerHTML = `
+              <label style=\"font-weight:500;\">Type:</label>
+              <select class=\"component-input\" style=\"margin-bottom:0.5rem;max-width:180px;\">
+                <option value=\"url\" ${comp.value.videoType === 'url' ? 'selected' : ''}>URL</option>
+                <option value=\"embed\" ${comp.value.videoType === 'embed' ? 'selected' : ''}>Embed</option>
+                <option value=\"upload\" ${comp.value.videoType === 'upload' ? 'selected' : ''}>Upload</option>
+              </select>
+              <div class=\"video-type-fields\"></div>
+              <div class=\"component-preview\"></div>
+            `;
+            const select = content.querySelector('select');
+            const fields = content.querySelector('.video-type-fields');
+            const preview = content.querySelector('.component-preview');
+            function updateFields() {
+              fields.innerHTML = '';
+              preview.innerHTML = '';
+              if (comp.value.videoType === 'url') {
+                fields.innerHTML = `<input type=\"url\" class=\"component-input\" value=\"${comp.value.url || ''}\" placeholder=\"Video URL (YouTube, Vimeo, etc.)\" />`;
+                fields.querySelector('input').oninput = e => {
+                  comp.value.url = e.target.value;
+                  renderComponents();
+                };
+                if (comp.value.url) preview.innerHTML = `<iframe width=\"320\" height=\"180\" src=\"${getVideoEmbedUrl(comp.value.url)}\" frameborder=\"0\" allowfullscreen></iframe>`;
+              } else if (comp.value.videoType === 'embed') {
+                fields.innerHTML = `<textarea class=\"component-input\" rows=\"2\" placeholder=\"Embed code (iframe)\">${comp.value.embed || ''}</textarea>`;
+                fields.querySelector('textarea').oninput = e => {
+                  comp.value.embed = e.target.value;
+                  renderComponents();
+                };
+                if (comp.value.embed) preview.innerHTML = comp.value.embed;
+              } else if (comp.value.videoType === 'upload') {
+                fields.innerHTML = `<input type=\"file\" accept=\"video/*\" class=\"component-input\" />`;
+                fields.querySelector('input').onchange = e => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                      comp.value.file = ev.target.result;
+                      renderComponents();
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                };
+                if (comp.value.file) preview.innerHTML = `<video controls style=\"max-width:320px;max-height:180px;\"><source src=\"${comp.value.file}\" /></video>`;
+              }
+            }
+            select.onchange = e => {
+              comp.value.videoType = e.target.value;
+              renderComponents();
+            };
+            updateFields();
+            break;
+          }
+          case 'button':
+            content = document.createElement('div');
+            content.innerHTML = `<input type=\"text\" class=\"component-input\" value=\"${comp.value?.label || ''}\" placeholder=\"Knoptekst\" /> ` +
+              `<input type=\"url\" class=\"component-input\" value=\"${comp.value?.url || ''}\" placeholder=\"Knop URL\" />` +
+              `<div class=\"component-preview\">` +
+              (comp.value?.label ? `<a href=\"${comp.value?.url || '#'}\" class=\"preview-btn\" target=\"_blank\">${comp.value.label}</a>` : '') +
+              `</div>`;
+            const [labelInput, urlInput] = content.querySelectorAll('input');
+            if (!comp.value || typeof comp.value !== 'object') comp.value = { label: '', url: '' };
+            labelInput.oninput = e => { comp.value.label = e.target.value; renderComponents(); };
+            urlInput.oninput = e => { comp.value.url = e.target.value; renderComponents(); };
+            break;
+          case 'list':
+            content = document.createElement('div');
+            content.innerHTML = `<textarea class=\"component-input\" rows=\"3\" placeholder=\"Eén item per regel\">${(comp.value || []).join('\\n')}</textarea>` +
+              `<div class=\"component-preview\"><ul>${(comp.value || []).map(item => `<li>${item}</li>`).join('')}</ul></div>`;
+            content.querySelector('textarea').oninput = e => {
+              components[idx].value = e.target.value.split('\\n');
+              renderComponents();
+            };
+            break;
+        }
+        wrapper.appendChild(content);
+        list.appendChild(wrapper);
+      });
+    }
+    function getComponentTypeTitle(type) {
+      switch(type) {
+        case 'text': return 'Tekst';
+        case 'image': return 'Afbeelding';
+        case 'video': return 'Video (embed)';
+        case 'video-url': return 'Video (URL)';
+        case 'button': return 'Knop';
+        case 'list': return 'Lijst';
+        default: return '';
+      }
+    }
+    function moveComponent(idx, dir) {
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= components.length) return;
+      [components[idx], components[newIdx]] = [components[newIdx], components[idx]];
+      renderComponents();
+    }
+    function removeComponent(idx) {
+      components.splice(idx, 1);
+      renderComponents();
+    }
+    function addComponent() {
+      const type = document.getElementById('component-type').value;
+      let value;
+      switch (type) {
+        case 'text': value = ''; break;
+        case 'image': value = ''; break;
+        case 'video': value = ''; break;
+        case 'video-url': value = ''; break;
+        case 'button': value = { label: '', url: '' }; break;
+        case 'list': value = []; break;
+      }
+      components.push({ type, value });
+      renderComponents();
+    }
+    function getVideoEmbedUrl(url) {
+      // Alleen basis YouTube en Vimeo ondersteuning
+      if (url.includes('youtube.com/watch?v=')) {
+        const id = url.split('v=')[1].split('&')[0];
+        return 'https://www.youtube.com/embed/' + id;
+      }
+      if (url.includes('youtu.be/')) {
+        const id = url.split('youtu.be/')[1].split('?')[0];
+        return 'https://www.youtube.com/embed/' + id;
+      }
+      if (url.includes('vimeo.com/')) {
+        const id = url.split('vimeo.com/')[1].split(/[?/]/)[0];
+        return 'https://player.vimeo.com/video/' + id;
+      }
+      return '';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      renderComponents();
+      document.getElementById('add-component-btn').onclick = addComponent;
+      document.getElementById('editArticleForm').onsubmit = function(e) {
+        e.preventDefault();
+        alert('Artikel zou worden opgeslagen (mockup).');
+      };
+      document.getElementById('preview-btn').onclick = function() {
+        showPreview();
+      };
+    });
+    function showPreview() {
+      // Create modal
+      let modal = document.createElement('div');
+      modal.className = 'preview-modal-bg';
+      modal.innerHTML = `<div class='preview-modal'><div class='preview-modal-header'><span>Voorbeeld artikel</span><button class='close-preview'>&times;</button></div><div class='preview-modal-content'></div></div>`;
+      document.body.appendChild(modal);
+      // Fill content
+      const content = modal.querySelector('.preview-modal-content');
+      const title = document.getElementById('edit-title').value;
+      content.innerHTML = `<h2>${title}</h2>` + components.map(renderComponentPreview).join('');
+      // Close
+      modal.querySelector('.close-preview').onclick = () => modal.remove();
+      modal.onclick = e => { if (e.target === modal) modal.remove(); };
+    }
+    function renderComponentPreview(comp) {
+      switch(comp.type) {
+        case 'text': return `<div class='preview-block'><p>${escapeHtml(comp.value)}</p></div>`;
+        case 'image': return comp.value ? `<div class='preview-block'><img src='${escapeHtml(comp.value)}' alt='Afbeelding' style='max-width:100%;border-radius:8px;'/></div>` : '';
+        case 'video': return comp.value ? `<div class='preview-block'>${comp.value}</div>` : '';
+        case 'video-url': return comp.value ? `<div class='preview-block'><iframe width='320' height='180' src='${getVideoEmbedUrl(comp.value)}' frameborder='0' allowfullscreen></iframe></div>` : '';
+        case 'button': return comp.value?.label ? `<div class='preview-block'><a href='${escapeHtml(comp.value.url || '#')}' class='preview-btn' target='_blank'>${escapeHtml(comp.value.label)}</a></div>` : '';
+        case 'list': return comp.value?.length ? `<div class='preview-block'><ul>${comp.value.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>` : '';
+        default: return '';
+      }
+    }
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, function(tag) {
+        const charsToReplace = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        };
+        return charsToReplace[tag] || tag;
+      });
+    }
+  </script>
+</body>
+</html>

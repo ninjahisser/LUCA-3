@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Article - CMS News Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="dashboard">
+    <header>
+      <h1>Edit Article</h1>
+      <nav>
+        <a href="index.html" class="nav-link">← Back to Dashboard</a>
+      </nav>
+    </header>
+    <section class="edit-article-form">
+      <form id="editArticleForm">
+        <label for="edit-title">Title</label>
+        <input type="text" id="edit-title" name="title" value="Major News Event" required />
+
+        <label for="edit-stats">Views</label>
+        <input type="number" id="edit-stats" name="views" value="1234" min="0" />
+
+        <div class="components-section">
+          <h3>Article Components</h3>
+          <div id="components-list"></div>
+          <div class="add-component-bar">
+            <label for="component-type">Add component:</label>
+            <select id="component-type">
+              <option value="text">Text</option>
+              <option value="image">Image</option>
+              <option value="video">Video (Embed)</option>
+              <option value="video-url">Video (URL)</option>
+              <option value="button">Button</option>
+              <option value="list">List</option>
+            </select>
+            <button type="button" id="add-component-btn">Add</button>
+          </div>
+        </div>
+
+        <button type="submit">Save Changes</button>
+      </form>
+    </section>
+  </div>
+  <script>
+    // Article components state
+    let components = [
+      { type: 'text', value: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
+      { type: 'image', value: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80' },
+      { type: 'video-url', value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+      { type: 'list', value: ['First item', 'Second item'] },
+    ];
+
+    function renderComponents() {
+      const list = document.getElementById('components-list');
+      list.innerHTML = '';
+      components.forEach((comp, idx) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'component-block';
+        // Controls
+        const controls = document.createElement('div');
+        controls.className = 'component-controls';
+        if (idx > 0) {
+          const upBtn = document.createElement('button');
+          upBtn.type = 'button';
+          upBtn.textContent = '↑';
+          upBtn.title = 'Move up';
+          upBtn.onclick = () => { moveComponent(idx, -1); };
+          controls.appendChild(upBtn);
+        }
+        if (idx < components.length - 1) {
+          const downBtn = document.createElement('button');
+          downBtn.type = 'button';
+          downBtn.textContent = '↓';
+          downBtn.title = 'Move down';
+          downBtn.onclick = () => { moveComponent(idx, 1); };
+          controls.appendChild(downBtn);
+        }
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.textContent = '✕';
+        delBtn.title = 'Remove';
+        delBtn.onclick = () => { removeComponent(idx); };
+        controls.appendChild(delBtn);
+        wrapper.appendChild(controls);
+        // Component content
+        let content;
+        switch (comp.type) {
+          case 'text':
+            content = document.createElement('textarea');
+            content.value = comp.value;
+            content.className = 'component-textarea';
+            content.oninput = e => { components[idx].value = e.target.value; };
+            break;
+          case 'image':
+            content = document.createElement('div');
+            content.innerHTML = `<input type="url" class="component-input" value="${comp.value}" placeholder="Image URL" />` +
+              `<div class="component-preview"><img src="${comp.value}" alt="Image preview" /></div>`;
+            content.querySelector('input').oninput = e => {
+              components[idx].value = e.target.value;
+              renderComponents();
+            };
+            break;
+          case 'video':
+            content = document.createElement('div');
+            content.innerHTML = `<textarea class="component-input" rows="2" placeholder="Embed code (iframe)">${comp.value || ''}</textarea>` +
+              `<div class="component-preview">${comp.value || ''}</div>`;
+            content.querySelector('textarea').oninput = e => {
+              components[idx].value = e.target.value;
+              renderComponents();
+            };
+            break;
+          case 'video-url':
+            content = document.createElement('div');
+            content.innerHTML = `<input type="url" class="component-input" value="${comp.value}" placeholder="Video URL (YouTube, Vimeo, etc.)" />` +
+              `<div class="component-preview">` +
+              (comp.value ? `<iframe width="320" height="180" src="${getVideoEmbedUrl(comp.value)}" frameborder="0" allowfullscreen></iframe>` : '') +
+              `</div>`;
+            content.querySelector('input').oninput = e => {
+              components[idx].value = e.target.value;
+              renderComponents();
+            };
+            break;
+          case 'button':
+            content = document.createElement('div');
+            content.innerHTML = `<input type="text" class="component-input" value="${comp.value?.label || ''}" placeholder="Button text" /> ` +
+              `<input type="url" class="component-input" value="${comp.value?.url || ''}" placeholder="Button URL" />` +
+              `<div class="component-preview">` +
+              (comp.value?.label ? `<a href="${comp.value?.url || '#'}" class="preview-btn" target="_blank">${comp.value.label}</a>` : '') +
+              `</div>`;
+            const [labelInput, urlInput] = content.querySelectorAll('input');
+            if (!comp.value || typeof comp.value !== 'object') comp.value = { label: '', url: '' };
+            labelInput.oninput = e => { comp.value.label = e.target.value; renderComponents(); };
+            urlInput.oninput = e => { comp.value.url = e.target.value; renderComponents(); };
+            break;
+          case 'list':
+            content = document.createElement('div');
+            content.innerHTML = `<textarea class="component-input" rows="3" placeholder="One item per line">${(comp.value || []).join('\n')}</textarea>` +
+              `<div class="component-preview"><ul>${(comp.value || []).map(item => `<li>${item}</li>`).join('')}</ul></div>`;
+            content.querySelector('textarea').oninput = e => {
+              components[idx].value = e.target.value.split('\n');
+              renderComponents();
+            };
+            break;
+        }
+        wrapper.appendChild(content);
+        list.appendChild(wrapper);
+      });
+    }
+
+    function moveComponent(idx, dir) {
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= components.length) return;
+      [components[idx], components[newIdx]] = [components[newIdx], components[idx]];
+      renderComponents();
+    }
+    function removeComponent(idx) {
+      components.splice(idx, 1);
+      renderComponents();
+    }
+    function addComponent() {
+      const type = document.getElementById('component-type').value;
+      let value;
+      switch (type) {
+        case 'text': value = ''; break;
+        case 'image': value = ''; break;
+        case 'video': value = ''; break;
+        case 'video-url': value = ''; break;
+        case 'button': value = { label: '', url: '' }; break;
+        case 'list': value = []; break;
+      }
+      components.push({ type, value });
+      renderComponents();
+    }
+    function getVideoEmbedUrl(url) {
+      // Only basic YouTube and Vimeo support for demo
+      if (url.includes('youtube.com/watch?v=')) {
+        const id = url.split('v=')[1].split('&')[0];
+        return 'https://www.youtube.com/embed/' + id;
+      }
+      if (url.includes('youtu.be/')) {
+        const id = url.split('youtu.be/')[1].split('?')[0];
+        return 'https://www.youtube.com/embed/' + id;
+      }
+      if (url.includes('vimeo.com/')) {
+        const id = url.split('vimeo.com/')[1].split(/[?/]/)[0];
+        return 'https://player.vimeo.com/video/' + id;
+      }
+      return '';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderComponents();
+      document.getElementById('add-component-btn').onclick = addComponent;
+      document.getElementById('editArticleForm').onsubmit = function(e) {
+        e.preventDefault();
+        alert('Article changes would be saved (mockup).');
+      };
+    });
+  </script>
+</body>
+</html>

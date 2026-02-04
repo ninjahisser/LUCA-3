@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CMS News Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="dashboard">
+    <header>
+      <div class="header-main">
+        <h1>CMS Nieuws Dashboard</h1>
+        <nav>
+          <a href="artikel-bewerken.html" class="nav-link primary">+ Nieuw artikel</a>
+          <button id="manage-articles" class="nav-link">Artikelen beheren</button>
+        </nav>
+      </div>
+    </header>
+    <section class="stats">
+      <div class="stat">
+        <h2>Nieuwe gebruikers</h2>
+        <p id="stat-users">1.234</p>
+      </div>
+      <div class="stat">
+        <h2>Totaal aantal klikken</h2>
+        <p id="stat-clicks">12.345</p>
+      </div>
+      <div class="stat">
+        <h2>Meest aangeklikte artikel</h2>
+        <p id="stat-most-clicked">Breaking News: Simpelere Artikels</p>
+      </div>
+      <div class="stat">
+        <h2>Bezoekers per land</h2>
+        <ul id="stat-countries">
+          <li>België: 1.000</li>
+          <li>Nederland: 500</li>
+          <li>Frankrijk: 200</li>
+        </ul>
+      </div>
+    </section>
+    <section class="articles">
+      <h2>Laatste artikels</h2>
+      <div class="article-list">
+        <article class="article simple">
+          <div class="article-img-wrap">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Nieuws" />
+          </div>
+          <div class="article-content">
+            <h3>Belangrijk Nieuws</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vitae velit ex.</p>
+            <div class="article-meta">
+              <span>Weergaven: 1.234</span>
+              <a href="artikel-bewerken.html" class="edit-btn">Bewerken</a>
+            </div>
+          </div>
+        </article>
+        <article class="article simple">
+          <div class="article-img-wrap">
+            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80" alt="Nieuws" />
+          </div>
+          <div class="article-content">
+            <h3>Een andere kop</h3>
+            <p>Aliquam erat volutpat. Etiam ac erat ut enim maximus accumsan.</p>
+            <div class="article-meta">
+              <span>Weergaven: 789</span>
+              <button class="edit-btn">Bewerken</button>
+            </div>
+          </div>
+        </article>
+        <article class="article simple">
+          <div class="article-img-wrap">
+            <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Nieuws" />
+          </div>
+          <div class="article-content">
+            <h3>Breaking: Eenvoud wint</h3>
+            <p>Morbi blandit cursus risus at ultrices mi tempus imperdiet nulla malesuada.</p>
+            <div class="article-meta">
+              <span>Weergaven: 456</span>
+              <button class="edit-btn">Bewerken</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
