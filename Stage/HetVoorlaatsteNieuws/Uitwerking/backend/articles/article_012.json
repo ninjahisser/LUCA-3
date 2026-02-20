@@ -1,0 +1,21 @@
+{
+  "id": "article_012",
+  "title": "Nieuw fietspad langs Leie officieel geopend",
+  "author": "Kristof Bosmans",
+  "category": "GENT",
+  "group": "standaard",
+  "size": "klein",
+  "components": [
+    {
+      "type": "image",
+      "src": "https://picsum.photos/800/400?random=12",
+      "alt": "Fietspad Leie"
+    },
+    {
+      "type": "text",
+      "content": "15 kilometer nieuw fietspad verbindt centrum Gent met dorpen langs de Leie."
+    }
+  ],
+  "created_at": "2026-02-13T15:00:00",
+  "updated_at": "2026-02-13T15:00:00"
+}

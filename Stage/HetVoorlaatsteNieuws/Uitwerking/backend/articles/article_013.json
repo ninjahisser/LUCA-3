@@ -1,0 +1,21 @@
+{
+  "id": "article_013",
+  "title": "Economische groei Vlaanderen stijgt met 2.3% in 2025",
+  "author": "Dirk Vandamme",
+  "category": "ECONOMISCH",
+  "group": "standaard",
+  "size": "klein",
+  "components": [
+    {
+      "type": "image",
+      "src": "https://picsum.photos/800/400?random=13",
+      "alt": "Economie"
+    },
+    {
+      "type": "text",
+      "content": "De Vlaamse economie groeit sterker dan verwacht, met name in tech- en groene sectoren."
+    }
+  ],
+  "created_at": "2026-02-12T12:15:00",
+  "updated_at": "2026-02-12T12:15:00"
+}

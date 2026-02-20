@@ -1,0 +1,21 @@
+{
+  "id": "article_008",
+  "title": "Nieuwe reclamespot wint Cannes Lions Award",
+  "author": "Sophie Vandenberghe",
+  "category": "RECLAME",
+  "group": "standaard",
+  "size": "groot",
+  "components": [
+    {
+      "type": "image",
+      "src": "https://picsum.photos/800/400?random=8",
+      "alt": "Reclame award"
+    },
+    {
+      "type": "text",
+      "content": "Een Belgisch reclamebureau behaalt goud op het internationale festival voor creativiteit."
+    }
+  ],
+  "created_at": "2026-02-17T16:45:00",
+  "updated_at": "2026-02-17T16:45:00"
+}

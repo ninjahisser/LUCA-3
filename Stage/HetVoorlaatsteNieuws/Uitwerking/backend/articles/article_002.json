@@ -1,0 +1,21 @@
+{
+  "id": "article_002",
+  "title": "Wat valt er te zien in het Halfvastenfoor?",
+  "author": "HetVoorlaatsteNieuws",
+  "category": "SOCIAAL",
+  "group": "het klein nieuws",
+  "size": "klein",
+  "components": [
+    {
+      "type": "image",
+      "src": "https://picsum.photos/800/400?random=2",
+      "alt": "Halfvastenfoor attracties"
+    },
+    {
+      "type": "text",
+      "content": "Het Halfvastenfoor is een van de populairste evenementen in België. Met meer dan 30 attracties en een rijke geschiedenis, biedt dit evenement plezier voor het hele gezin."
+    }
+  ],
+  "created_at": "2026-02-18T14:30:00",
+  "updated_at": "2026-02-18T14:30:00"
+}

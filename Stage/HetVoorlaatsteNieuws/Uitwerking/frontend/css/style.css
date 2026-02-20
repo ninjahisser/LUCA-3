@@ -1,0 +1,783 @@
+:root {
+    /* Colors */
+    --dark: #000000;
+    --third: #0033FF;
+    --thirdlight: #91B6FF;
+    --main: #FFFFFF;
+    --background: #F5F5F5;
+    
+    /* Typography */
+    --BlackTitle: 'Helvetica Neue', Arial, sans-serif;
+    --Normal: 'Helvetica Neue', Arial, sans-serif;
+    --Main: 'Merriweather', Georgia, serif;
+    --Bluetext: 'Helvetica Neue', Arial, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--Normal);
+    background-color: var(--background);
+    color: var(--dark);
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--third);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 100%;
+    padding: 10px 20px;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.logo {
+    background-color: var(--main);
+    color: var(--third);
+    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.nav-link {
+    color: var(--main);
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 15px;
+    display: block;
+    font-size: 12px;
+    border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background-color: rgba(0,0,0,0.1);
+}
+
+.nav-submenu {
+    display: flex;
+    padding: 5px 0;
+    gap: 15px;
+    font-size: 11px;
+    color: var(--main);
+    font-weight: bold;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+/* Hero Section */
+.hero-section {
+    background-color: var(--background);
+    padding: 40px 20px;
+}
+
+.hero-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.hero-image {
+    width: 100%;
+    height: 400px;
+    background-color: #888;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.hero-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 150px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+
+.hero-title {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: var(--main);
+    font-family: var(--Main);
+    font-size: 28px;
+    font-weight: 900;
+    z-index: 2;
+}
+
+.hero-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-box {
+    background-color: var(--main);
+    padding: 25px;
+    border: 1px solid #ddd;
+}
+
+.sidebar-box h3 {
+    font-family: var(--BlackTitle);
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--dark);
+}
+
+.sidebar-box p {
+    font-family: var(--Normal);
+    font-size: 13px;
+    margin-bottom: 15px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.sidebar-email {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    font-size: 12px;
+}
+
+.workshop-box {
+    background-color: #f0f0f0;
+}
+
+.btn-blue {
+    width: 100%;
+    background-color: var(--third);
+    color: var(--main);
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--BlackTitle);
+}
+
+.btn-blue:hover {
+    background-color: #0028cc;
+}
+
+/* Group Sections */
+.group-section {
+    margin: 40px 0;
+}
+
+.group-header {
+    margin-bottom: 25px;
+}
+
+.group-title {
+    font-family: var(--BlackTitle);
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--dark);
+    border-bottom: 3px solid var(--third);
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+/* Featured Group - Classic 3-column */
+.featured-grid-dynamic {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* Other Groups - Chaotic Masonry Layout */
+.group-grid-dynamic {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: auto;
+    gap: 20px;
+    margin-bottom: 20px;
+    grid-auto-flow: dense;
+}
+
+.group-grid-dynamic .large-item {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.group-grid-dynamic .small-item {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+/* Klein Nieuws - Special Layout */
+.klein-nieuws-section {
+    background-color: var(--third);
+    padding: 30px 20px;
+    margin: 40px 0;
+}
+
+.klein-nieuws-header {
+    max-width: 1400px;
+    margin: 0 auto 20px;
+}
+
+.klein-nieuws-header h2 {
+    background-color: var(--main);
+    color: var(--third);
+    padding: 12px 20px;
+    font-family: var(--BlackTitle);
+    font-size: 18px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.klein-nieuws-grid-dynamic {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+    grid-auto-flow: dense;
+}
+
+.klein-nieuws-grid-dynamic .large-item {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.klein-nieuws-grid-dynamic .small-item {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+.klein-nieuws-footer {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Article Card Styling */
+.article-card {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--main);
+    cursor: pointer;
+    height: 250px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.article-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.article-card.large-item {
+    height: 500px;
+}
+
+.article-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.article-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 20px;
+    color: var(--main);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.article-label {
+    background-color: var(--third);
+    color: var(--main);
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 10px;
+    width: fit-content;
+}
+
+.article-title {
+    font-family: var(--Main);
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.3;
+}
+
+/* Articles Grid */
+.featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    padding: 20px 0;
+    margin-bottom: 40px;
+}
+
+.article-card {var(--main);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.article-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.article-image {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, #999999, #aaaaaa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--main);
+    font-size: 2rem;
+    overflow: hidden;
+}
+
+.article-content {
+    padding: 15px;
+}
+
+.article-category {
+    display: inline-block;
+    background-color: var(--third);
+    color: var(--main);
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-size: 0.65rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.article-title {
+    font-family: var(--BlackTitle);
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--dark)om: 8px;
+    color: #333;
+    line-height: 1.3;
+}
+
+.article-excerpt {
+    color: #666;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.article-meta {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+/* Middle Article Section */
+.middle-article-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin: 40px 0;
+}
+
+.middle-article-main {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--main);
+}
+
+.middle-article-main .featured-item-image {
+    min-height: 400px;
+}
+
+.middle-article-side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.middle-article-small {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--main);
+    height: 200px;
+}
+
+.middle-article-small .featured-item-image {
+    min-height: 200px;
+}
+
+/* Klein Nieuws Section - OLD (Keep for compatibility) */
+.klein-nieuws-title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.klein-nieuws-grid-old {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.klein-nieuws-card {
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.klein-nieuws-card:hover {
+    transform: translateY(-3px);
+}
+
+.klein-nieuws-card.groot {
+    grid-row: span 2;
+}
+
+.klein-nieuws-card.klein {
+    grid-row: span 1;
+}
+
+.klein-nieuws-image {
+    width: 100%;
+    height: 140px;
+    background: linear-gradient(135deg, #999999, #aaaaaa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    overflow: hidden;
+}
+
+.klein-nieuws-card.groot .klein-nieuws-image {
+    height: 300px;
+}
+
+.klein-nieuws-content {
+    padding: 10px;
+}
+
+.klein-nieuws-title-small {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.2;
+}
+
+.klein-nieuws-button {
+    text-align: center;
+}
+
+.klein-nieuws-button button {
+    background-color: white;
+    color: #0051d8;
+    border: none;
+    padding: 12px 30px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.klein-nieuws-button button:hover {
+    background-color: #f0f0f0;
+}
+
+/* Loading and Error States */
+.loading,
+.error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.1rem;
+}
+
+.error {
+    background-color: #fee;
+    color: #c00;
+    border-radius: 4px;
+    margin: 2rem 0;
+}
+
+/* Footer */
+footer {
+    background-color: var(--third);
+    color: var(--main);
+    padding: 30px 20px 20px;
+    margin-top: 40px;
+}
+
+.footer-top {
+    max-width: 1400px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    border-bottom: 1px solid var(--thirdlight);
+    padding-bottom: 20px;
+}
+
+.footer-logo {
+    background-color: var(--main);
+    color: var(--third);
+    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+.footer-title {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.footer-input-section {
+    margin-bottom: 30px;
+}
+
+.footer-email {
+    width: 300px;
+    padding: 10px 15px;
+    border: 1px solid var(--main);
+    background-color: transparent;
+    color: var(--main);
+    font-size: 13px;
+}
+
+.footer-email::placeholder {
+    color: var(--thirdlight);
+}
+
+.footer-sections {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+.footer-section h4 {
+    font-family: var(--BlackTitle);
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--main);
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section li {
+    margin-bottom: 8px;
+}
+
+.footer-section a {
+    color: var(--main);
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.footer-section a:hover {
+    text-decoration: underline;
+}
+
+/* Old Footer Styling - Keep for backwards compat */
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.footer-section h4 {
+    font-family: var(--Normal);
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 8px;
+}
+
+.footer-section a {
+    color: var(--main);
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.footer-section a:hover {
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #555;
+    padding-top: 20px;
+}
+
+.footer-bottom input {
+    padding: 8px 15px;
+    width: 300px;
+    max-width: 100%;
+    border: 1px solid #555;
+    background-color: transparent;
+    color: var(--main)olor: transparent;
+    color: white;
+}
+
+.footer-bottom input::placeholder {
+    color: #999;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .featured-grid-dynamic {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .group-grid-dynamic {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .group-grid-dynamic .large-item {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+    
+    .klein-nieuws-grid-dynamic {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .klein-nieuws-grid-dynamic .large-item {
+        grid-column: span 2;
+        grid-row: span 1;
+    }
+    
+    .middle-article-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-sections {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nav-menu {
+        gap: 15px;
+    }
+    
+    .nav-submenu {
+        gap: 10px;
+        font-size: 10px;
+    }
+    
+    .hero-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .featured-grid-dynamic {
+        grid-template-columns: 1fr;
+    }
+    
+    .group-grid-dynamic {
+        grid-template-columns: 1fr;
+    }
+    
+    .group-grid-dynamic .large-item {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+    
+    .klein-nieuws-grid-dynamic {
+        grid-template-columns: 1fr;
+    }
+    
+    .klein-nieuws-grid-dynamic .large-item {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+    
+    .footer-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .article-card {
+        height: 200px;
+    }
+    
+    .article-card.large-item {
+        height: 250px;
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "article_001",
+  "title": "Belgium for beginners: Ministerie van maskers!",
+  "author": "HetVoorlaatsteNieuws",
+  "category": "POLITIEK",
+  "group": "het klein nieuws",
+  "size": "groot",
+  "components": [
+    {
+      "type": "image",
+      "src": "https://picsum.photos/800/400?random=1",
+      "alt": "Belgium politiek"
+    },
+    {
+      "type": "text",
+      "content": "De Belgische politiek is een kompleks systeem met meerdere regeringen en niveaus van bestuur. Dit artikel verkent de mysteries van het Belgische politieke stelsel."
+    },
+    {
+      "type": "text",
+      "content": "Met meerdere taalgroepen en autonome regio's is België uniek in zijn beleidsvorming."
+    }
+  ],
+  "created_at": "2026-02-20T10:00:00",
+  "updated_at": "2026-02-20T10:00:00"
+}
