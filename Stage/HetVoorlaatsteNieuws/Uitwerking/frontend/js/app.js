@@ -40,89 +40,191 @@ class ArticleLoader {
     createGroupSection(groupName, articles) {
         const section = document.createElement('div');
         section.className = 'group-section';
-        
-        // Determine grid class based on group name
         if (groupName === 'het klein nieuws') {
             section.className = 'klein-nieuws-section';
         }
-        
-        // Create header
-        const header = document.createElement('div');
-        header.className = 'group-header';
-        
-        // Header style depends on group
-        if (groupName === 'het klein nieuws') {
+        if (groupName !== 'standaard' && groupName === 'standaard') {
+            const header = document.createElement('div');
+            header.className = 'group-header';
+            header.innerHTML = `<h2 class="group-title">${groupName.toUpperCase()}</h2>`;
+            section.appendChild(header);
+        } else if (groupName === 'het klein nieuws') {
+            const header = document.createElement('div');
             header.className = 'klein-nieuws-header';
             header.innerHTML = `<h2>${groupName}</h2>`;
-        } else {
-            header.innerHTML = `<h2 class="group-title">${groupName.toUpperCase()}</h2>`;
+            section.appendChild(header);
         }
-        
-        section.appendChild(header);
-        
-        // Create grid container
-        const grid = document.createElement('div');
-        
-        // Different grid classes for different groups
-        if (groupName === 'het klein nieuws') {
-            grid.className = 'klein-nieuws-grid-dynamic';
-        } else if (groupName === 'featured') {
-            grid.className = 'featured-grid-dynamic';
-        } else {
-            grid.className = 'group-grid-dynamic';
-        }
-        
-        // Add articles to grid
-        articles.forEach((article, index) => {
-            const card = this.createArticleCard(article);
-            
-            // Add size classes for chaotic layout
-            if (article.size === 'groot') {
-                card.classList.add('large-item');
-            } else {
-                card.classList.add('small-item');
+        const container = document.createElement('div');
+        if (groupName === 'standaard') {
+            container.className = 'standaard-grid';
+            const rows = [];
+            let i = 0;
+            while (i < articles.length) {
+                const article = articles[i];
+                if (article.size === 'groot') {
+                    // randomize left/right
+                    const grootLeft = Math.random() < 0.5;
+                    const row = [article];
+                    i++;
+                    const smalls = [];
+                    for (let k = 0; k < 2 && i < articles.length; k++) {
+                        if (articles[i].size === 'klein') {
+                            smalls.push(articles[i]);
+                            i++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (grootLeft) {
+                        row.push(...smalls);
+                    } else {
+                        row.unshift(...smalls);
+                    }
+                    rows.push(row);
+                } else {
+                    const row = [article];
+                    i++;
+                    while (row.length < 3 && i < articles.length && articles[i].size === 'klein') {
+                        row.push(articles[i]);
+                        i++;
+                    }
+                    rows.push(row);
+                }
             }
-            
-            // Add rotation and offset for chaotic effect
-            const rotation = (Math.random() - 0.5) * 2; // -1 to 1 degrees
-            card.style.transform = `rotate(${rotation}deg)`;
-            
-            grid.appendChild(card);
-        });
-        
-        section.appendChild(grid);
-        
-        // Add button for klein nieuws
+            for (let r = 1; r < rows.length; r++) {
+                const row = rows[r];
+                if (row.length === 2 && row.every(a => a.size === 'klein')) {
+                    const prev = rows[r - 1];
+                    if (prev.every(a => a.size === 'klein') && prev.length < 3) {
+                        prev.push(row.shift());
+                    }
+                }
+            }
+            rows.forEach(row => {
+                const rowEl = document.createElement('div');
+                rowEl.className = 'standaard-row';
+                if (row.length === 3 && row.some(a => a.size === 'groot')) {
+                    rowEl.style.display = 'grid';
+                    rowEl.style.gridTemplateColumns = '1fr 1fr';
+                    rowEl.style.gap = '20px';
+                    const groot = row.find(a => a.size === 'groot');
+                    const smalls = row.filter(a => a.size === 'klein');
+                    const grootCard = this.createArticleCard(groot);
+                    grootCard.classList.add('large-item');
+                    // randomize groot left/right
+                    if (Math.random() < 0.5) {
+                        // groot links
+                        rowEl.appendChild(grootCard);
+                        // klein rechts in een column
+                        const smallContainer = document.createElement('div');
+                        smallContainer.style.display = 'flex';
+                        smallContainer.style.flexDirection = 'column';
+                        smallContainer.style.gap = '20px';
+                        smalls.forEach(item => {
+                            const card = this.createArticleCard(item);
+                            card.classList.add('small-item');
+                            smallContainer.appendChild(card);
+                        });
+                        rowEl.appendChild(smallContainer);
+                    } else {
+                        // klein links
+                        const smallContainer = document.createElement('div');
+                        smallContainer.style.display = 'flex';
+                        smallContainer.style.flexDirection = 'column';
+                        smallContainer.style.gap = '20px';
+                        smalls.forEach(item => {
+                            const card = this.createArticleCard(item);
+                            card.classList.add('small-item');
+                            smallContainer.appendChild(card);
+                        });
+                        rowEl.appendChild(smallContainer);
+                        // groot rechts
+                        rowEl.appendChild(grootCard);
+                    }
+                } else if (row.length === 3) {
+                    rowEl.style.display = 'grid';
+                    rowEl.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                    rowEl.style.gap = '20px';
+                    row.forEach(item => {
+                        const card = this.createArticleCard(item);
+                        card.classList.add('small-item');
+                        rowEl.appendChild(card);
+                    });
+                } else if (row.length === 2) {
+                    if (row.every(a => a.size === 'klein')) {
+                        rowEl.style.display = 'grid';
+                        rowEl.style.gridTemplateColumns = '1fr';
+                    } else {
+                        rowEl.style.display = 'grid';
+                        rowEl.style.gridTemplateColumns = '1fr 1fr';
+                    }
+                    rowEl.style.gap = '20px';
+                    row.forEach(item => {
+                        const card = this.createArticleCard(item);
+                        if (item.size === 'groot') card.classList.add('large-item');
+                        else card.classList.add('small-item');
+                        rowEl.appendChild(card);
+                    });
+                } else {
+                    rowEl.style.display = 'grid';
+                    rowEl.style.gridTemplateColumns = '1fr';
+                    rowEl.style.gap = '20px';
+                    const card = this.createArticleCard(row[0]);
+                    if (row[0].size === 'groot') card.classList.add('large-item');
+                    else card.classList.add('small-item');
+                    rowEl.appendChild(card);
+                }
+                container.appendChild(rowEl);
+            });
+        } else {
+            let gridClass = 'group-grid-dynamic';
+            if (groupName === 'featured') {
+                gridClass = 'featured-grid-dynamic';
+            } else if (groupName === 'het klein nieuws') {
+                gridClass = 'klein-nieuws-grid-dynamic';
+            }
+            container.className = gridClass;
+            articles.forEach((article) => {
+                const card = this.createArticleCard(article);
+                if (article.size === 'groot') {
+                    card.classList.add('large-item');
+                } else {
+                    card.classList.add('small-item');
+                }
+                container.appendChild(card);
+            });
+        }
+        section.appendChild(container);
         if (groupName === 'het klein nieuws') {
             const footer = document.createElement('div');
             footer.className = 'klein-nieuws-footer';
             footer.innerHTML = '<button class="btn-blue-full">BEKIJK "HET KLEIN NIEUWS"</button>';
             section.appendChild(footer);
         }
-        
         return section;
     }
 
     createArticleCard(article) {
         const card = document.createElement('div');
         card.className = 'article-card';
-        
         const imageUrl = this.getFirstImage(article);
-        
+        let categoryLabel = '';
+        if (article.category && article.category.toLowerCase() !== 'standaard') {
+            categoryLabel = `<div class="article-label">${article.category.toUpperCase()}</div>`;
+        }
         const html = `
-            <img src="${imageUrl || 'https://via.placeholder.com/400x300'}" 
+            <img src="${imageUrl || 'https://via.placeholder.com/800x450'}" 
                  alt="${article.title}" 
                  class="article-image"
-                 onerror="this.src='https://via.placeholder.com/400x300'">
+                 loading="lazy"
+                 onerror="this.src='https://via.placeholder.com/800x450'">
             <div class="article-overlay">
-                ${article.category ? `<div class="article-label">${article.category.toUpperCase()}</div>` : ''}
+                ${categoryLabel}
                 <h3 class="article-title">${article.title}</h3>
             </div>
         `;
-        
         card.innerHTML = html;
         card.addEventListener('click', () => this.showArticleDetail(article));
-        
         return card;
     }
 
@@ -166,7 +268,7 @@ class ArticleLoader {
         const content = document.createElement('div');
         content.style.cssText = `
             background-color: white;
-            border-radius: 8px;
+            border-radius: 0;
             max-width: 900px;
             width: 100%;
             max-height: 90vh;
@@ -180,9 +282,9 @@ class ArticleLoader {
                 if (component.type === 'text') {
                     componentsHtml += `<p style="margin: 15px 0; line-height: 1.6; color: #333;">${component.content || ''}</p>`;
                 } else if (component.type === 'image') {
-                    componentsHtml += `<img src="${component.src}" alt="Article image" style="width: 100%; margin: 20px 0; border-radius: 4px;">`;
+                    componentsHtml += `<img src="${component.src}" alt="Article image" style="width: 100%; margin: 20px 0; border-radius: 0;">`;
                 } else if (component.type === 'video') {
-                    componentsHtml += `<video controls style="width: 100%; margin: 20px 0; border-radius: 4px;"><source src="${component.src}"></video>`;
+                    componentsHtml += `<video controls style="width: 100%; margin: 20px 0; border-radius: 0;"><source src="${component.src}"></video>`;
                 } else if (component.type === 'audio') {
                     componentsHtml += `<audio controls style="width: 100%; margin: 20px 0;"><source src="${component.src}"></audio>`;
                 }
@@ -214,38 +316,71 @@ class ArticleLoader {
 document.addEventListener('DOMContentLoaded', async () => {
     const loader = new ArticleLoader();
     const container = document.getElementById('groupsContainer');
+    const kleinContainer = document.getElementById('kleinContainer');
     const loadingEl = document.getElementById('loading');
     const errorEl = document.getElementById('error');
     const heroImage = document.getElementById('heroImage');
-    
+
     try {
         const groupsData = await loader.loadGroups();
         loadingEl.style.display = 'none';
-        
-        // Set hero background image from first article
-        let firstArticles = groupsData['het klein nieuws'] || [];
-        if (firstArticles.length === 0) {
-            firstArticles = groupsData['standaard'] || [];
+
+        // separate out klein nieuws articles
+        const kleinArticles = groupsData['het klein nieuws'] || [];
+
+        // choose one random special group from the remaining ones (e.g. politiek)
+        const specialGroups = Object.keys(groupsData).filter(g => g !== 'standaard' && g !== 'het klein nieuws');
+        let chosenGroup = null;
+        if (specialGroups.length > 0) {
+            chosenGroup = specialGroups[Math.floor(Math.random() * specialGroups.length)];
         }
-        if (firstArticles.length > 0) {
-            const firstImage = loader.getFirstImage(firstArticles[0]);
+
+        // build merged list for everything except klein nieuws and chosenGroup
+        let merged = [];
+        if (groupsData['standaard']) {
+            merged = [...groupsData['standaard']];
+        }
+        Object.keys(groupsData).forEach(groupName => {
+            if (groupName === 'standaard' || groupName === 'het klein nieuws' || groupName === chosenGroup) return;
+            groupsData[groupName].forEach(article => {
+                const idx = Math.floor(Math.random() * (merged.length + 1));
+                merged.splice(idx, 0, article);
+            });
+        });
+
+        // set hero image based on the first item in the merged list (fallback to klein if empty)
+        let heroSource = merged.length > 0 ? merged[0] : (kleinArticles[0] || null);
+        if (heroSource) {
+            const firstImage = loader.getFirstImage(heroSource);
             if (firstImage && heroImage) {
                 heroImage.style.backgroundImage = `url('${firstImage}')`;
             }
         }
-        
-        // Render groups in order: het klein nieuws, then standaard
-        const groupOrder = ['het klein nieuws', 'standaard'];
-        groupOrder.forEach(groupName => {
-            if (groupsData[groupName] && groupsData[groupName].length > 0) {
-                const section = loader.createGroupSection(groupName, groupsData[groupName]);
+
+        // render klein nieuws separately into sidebar
+        if (kleinArticles.length > 0 && kleinContainer) {
+            const section = loader.createGroupSection('het klein nieuws', kleinArticles);
+            kleinContainer.appendChild(section);
+        }
+
+        // render the randomly chosen special group if we picked one earlier
+        if (chosenGroup) {
+            const articles = groupsData[chosenGroup];
+            if (articles && articles.length > 0) {
+                const section = loader.createGroupSection(chosenGroup, articles);
                 container.appendChild(section);
             }
-        });
-        
+        }
+
+        // render merged content into main container
+        if (merged.length > 0) {
+            const section = loader.createGroupSection('standaard', merged);
+            container.appendChild(section);
+        }
     } catch (error) {
         loadingEl.style.display = 'none';
         errorEl.style.display = 'block';
         errorEl.innerHTML = `<strong>Error loading articles:</strong> ${error.message}<br><small>Make sure the backend server is running at http://127.0.0.1:5000</small>`;
     }
 });
+

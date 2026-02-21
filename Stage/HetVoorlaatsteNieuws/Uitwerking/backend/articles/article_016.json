@@ -1,0 +1,21 @@
+{
+  "id": "article_016",
+  "title": "Minister kondigt nieuwe infrastructuurplannen aan",
+  "author": "HetVoorlaatsteNieuws",
+  "category": "POLITIEK",
+  "group": "politiek",
+  "size": "groot",
+  "components": [
+    {
+      "type": "image",
+      "src": "https://picsum.photos/1200/600?random=16",
+      "alt": "Ministeriefoto"
+    },
+    {
+      "type": "text",
+      "content": "De minister van Economie heeft vandaag een reeks infrastructuurprojecten aangekondigd die gericht zijn op het verbeteren van de wegen en openbaar vervoer. Deze plannen zijn onderdeel van een breder stimuleringspakket."
+    }
+  ],
+  "created_at": "2026-02-21T10:30:00",
+  "updated_at": "2026-02-21T10:30:00"
+}

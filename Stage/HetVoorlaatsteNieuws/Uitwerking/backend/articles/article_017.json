@@ -1,0 +1,21 @@
+{
+  "id": "article_017",
+  "title": "Gemeenteraad stemt over budget voor scholen",
+  "author": "HetVoorlaatsteNieuws",
+  "category": "POLITIEK",
+  "group": "politiek",
+  "size": "klein",
+  "components": [
+    {
+      "type": "image",
+      "src": "https://picsum.photos/800/400?random=17",
+      "alt": "School in vergaderruimte"
+    },
+    {
+      "type": "text",
+      "content": "De gemeenteraad beslist deze week over het budget dat naar lokale scholen gaat. Ouders en leraren hebben hun zorgen geuit over de toewijzing."
+    }
+  ],
+  "created_at": "2026-02-21T11:00:00",
+  "updated_at": "2026-02-21T11:00:00"
+}
