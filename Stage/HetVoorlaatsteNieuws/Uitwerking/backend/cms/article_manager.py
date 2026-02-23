@@ -8,7 +8,7 @@ class ArticleManager:
         self.articles_dir = articles_dir
         os.makedirs(articles_dir, exist_ok=True)
     
-    def create_article(self, title, author, category, components, size="klein"):
+    def create_article(self, title, author, category, components, size="klein", group=None):
         """Create a new article and save as JSON
         
         Args:
@@ -20,16 +20,20 @@ class ArticleManager:
         """
         article_id = str(uuid.uuid4())[:8]
         
+        group = group if group else None
+
         article = {
             'id': article_id,
             'title': title,
-            'author': author,
             'category': category,
             'size': size,
             'components': components,
             'created_at': datetime.now().isoformat(),
             'updated_at': datetime.now().isoformat()
         }
+
+        if group is not None:
+            article['group'] = group
         
         filepath = os.path.join(self.articles_dir, f'{article_id}.json')
         with open(filepath, 'w', encoding='utf-8') as f:
@@ -48,9 +52,12 @@ class ArticleManager:
             article = json.load(f)
         
         # Update allowed fields
-        for key in ['title', 'components', 'author', 'category', 'size']:
+        for key in ['title', 'components', 'category', 'size', 'group']:
             if key in kwargs:
-                article[key] = kwargs[key]
+                if key == 'group' and not kwargs[key]:
+                    article.pop('group', None)
+                else:
+                    article[key] = kwargs[key]
         
         article['updated_at'] = datetime.now().isoformat()
         

@@ -5,12 +5,16 @@ import json
 from cms.article_manager import ArticleManager
 from datetime import datetime, timedelta
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(__file__)
+FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'frontend'))
+
+app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path='')
 CORS(app)
 
-ARTICLES_DIR = os.path.join(os.path.dirname(__file__), 'articles')
+ARTICLES_DIR = os.path.join(BASE_DIR, 'articles')
 article_manager = ArticleManager(ARTICLES_DIR)
-VIEWS_FILE = os.path.join(os.path.dirname(__file__), 'views.json')
+VIEWS_FILE = os.path.join(BASE_DIR, 'views.json')
+SETTINGS_FILE = os.path.join(BASE_DIR, 'site_settings.json')
 
 def load_views():
     if os.path.exists(VIEWS_FILE):
@@ -21,6 +25,25 @@ def load_views():
 def save_views(views):
     with open(VIEWS_FILE, 'w', encoding='utf-8') as f:
         json.dump(views, f, ensure_ascii=False, indent=2)
+
+def load_site_settings():
+    if os.path.exists(SETTINGS_FILE):
+        with open(SETTINGS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {
+        'newsletterTitle': 'GEEN WERK MEER MISSEN?',
+        'newsletterText': 'MELD JE AAN OF DE NIEUWSBRIEF',
+        'newsletterButtonText': 'JA IK WIL DE NIEUWSBRIEF',
+        'newsletterButtonLink': '#',
+        'workshopTitle': 'ONTDEK ONZE WORKSHOP SPEEDANIMATIE',
+        'workshopText': 'Ik neem de allergrootste jaren workshops in SMAAK, designmuseum, scholen en veel meer!',
+        'workshopButtonText': 'IK WIL MEER WETEN',
+        'workshopButtonLink': '#'
+    }
+
+def save_site_settings(settings):
+    with open(SETTINGS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(settings, f, ensure_ascii=False, indent=2)
 
 @app.route('/api/articles', methods=['GET'])
 def get_articles():
@@ -37,8 +60,8 @@ def create_article():
     data = json.loads(request.data)
     article = article_manager.create_article(
         title=data.get('title'),
-        author=data.get('author'),
         category=data.get('category'),
+        group=data.get('group'),
         components=data.get('components', []),
         size=data.get('size', 'klein')
     )
@@ -100,12 +123,35 @@ def get_stats():
             stats['mostClicked'] = {'title': article['title'], 'clicks': v['clicks']}
     return jsonify(stats)
 
+@app.route('/api/site', methods=['GET'])
+def get_site_settings():
+    return jsonify(load_site_settings())
+
+@app.route('/api/site', methods=['PUT'])
+def update_site_settings():
+    data = json.loads(request.data)
+    current = load_site_settings()
+    current.update({
+        'newsletterTitle': data.get('newsletterTitle', current.get('newsletterTitle')),
+        'newsletterText': data.get('newsletterText', current.get('newsletterText')),
+        'newsletterButtonText': data.get('newsletterButtonText', current.get('newsletterButtonText')),
+        'newsletterButtonLink': data.get('newsletterButtonLink', current.get('newsletterButtonLink')),
+        'workshopTitle': data.get('workshopTitle', current.get('workshopTitle')),
+        'workshopText': data.get('workshopText', current.get('workshopText')),
+        'workshopButtonText': data.get('workshopButtonText', current.get('workshopButtonText')),
+        'workshopButtonLink': data.get('workshopButtonLink', current.get('workshopButtonLink'))
+    })
+    save_site_settings(current)
+    return jsonify(current)
+
 @app.route('/api/groups', methods=['GET'])
 def get_groups():
     groups = {}
     articles = article_manager.get_all_articles()
     for article in articles:
-        group_name = article.get('group', 'other')
+        group_name = article.get('group')
+        if not group_name:
+            continue
         if group_name not in groups:
             groups[group_name] = []
         groups[group_name].append(article)
@@ -123,6 +169,30 @@ def get_article(article_id):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
     return jsonify({'error': 'Article not found'}), 404
+
+@app.route('/')
+def serve_index():
+    return send_from_directory(FRONTEND_DIR, 'index.html')
+
+@app.route('/cms')
+def serve_cms():
+    return send_from_directory(FRONTEND_DIR, 'cms.html')
+
+@app.route('/cms-edit')
+def serve_cms_edit():
+    return send_from_directory(FRONTEND_DIR, 'cms-edit.html')
+
+@app.route('/cms-create')
+def serve_cms_create():
+    return send_from_directory(FRONTEND_DIR, 'cms-create.html')
+
+@app.route('/article/<article_id>')
+def serve_article(article_id):
+    return send_from_directory(FRONTEND_DIR, 'article.html')
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(FRONTEND_DIR, filename)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host='0.0.0.0')

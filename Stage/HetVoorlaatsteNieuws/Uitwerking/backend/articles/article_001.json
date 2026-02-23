@@ -1,25 +1,32 @@
 {
-  "id": "article_001",
-  "title": "Belgium for beginners: Ministerie van maskers!",
-  "author": "HetVoorlaatsteNieuws",
-  "category": "POLITIEK",
-  "group": "het klein nieuws",
-  "size": "groot",
-  "components": [
-    {
-      "type": "image",
-      "src": "https://picsum.photos/800/400?random=1",
-      "alt": "Belgium politiek"
-    },
-    {
-      "type": "text",
-      "content": "De Belgische politiek is een kompleks systeem met meerdere regeringen en niveaus van bestuur. Dit artikel verkent de mysteries van het Belgische politieke stelsel."
-    },
-    {
-      "type": "text",
-      "content": "Met meerdere taalgroepen en autonome regio's is België uniek in zijn beleidsvorming."
-    }
-  ],
-  "created_at": "2026-02-20T10:00:00",
-  "updated_at": "2026-02-20T10:00:00"
+    "id":  "article_001",
+    "title":  "Belgium for beginners: Ministerie van maskers!",
+    "category":  "POLITIEK",
+    "size":  "groot",
+    "components":  [
+                       {
+                           "type":  "image",
+                           "src":  "https://picsum.photos/800/400?random=1",
+                           "alt":  "Belgium politiek"
+                       },
+                       {
+                           "type":  "text",
+                           "content":  "De Belgische politiek is een kompleks systeem met meerdere regeringen en niveaus van bestuur. Dit artikel verkent de mysteries van het Belgische politieke stelsel."
+                       },
+                       {
+                           "type":  "text",
+                           "content":  "Met meerdere taalgroepen en autonome regio\u0027s is BelgiÃƒÆ’Ã‚Â« uniek in zijn beleidsvorming."
+                       },
+                       {
+                           "type":  "image",
+                           "src":  "https://picsum.photos/1000/500?random=101",
+                           "alt":  "Ministerie van maskers"
+                       },
+                       {
+                           "type":  "text",
+                           "content":  "In het parlement klinkt kritiek op de snelheid waarmee noodmaatregelen worden ingevoerd, terwijl andere partijen vooral nadruk leggen op eenheid."
+                       }
+                   ],
+    "created_at":  "2026-02-20T10:00:00",
+    "updated_at":  "2026-02-20T10:00:00"
 }

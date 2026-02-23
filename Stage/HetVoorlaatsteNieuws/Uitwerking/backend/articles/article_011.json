@@ -1,21 +1,29 @@
 {
-  "id": "article_011",
-  "title": "Gent nomineert zeven kandidaten voor Burgemeesterstitel 2027",
-  "author": "Marc De Vriese",
-  "category": "GENT",
-  "group": "standaard",
-  "size": "groot",
-  "components": [
-    {
-      "type": "image",
-      "src": "https://picsum.photos/800/400?random=11",
-      "alt": "Gent verkiezingen"
-    },
-    {
-      "type": "text",
-      "content": "Een recordaantal kandidaten dient zich aan voor de prestigieuze rol van Burgemeester van Gent."
-    }
-  ],
-  "created_at": "2026-02-14T10:30:00",
-  "updated_at": "2026-02-14T10:30:00"
+    "id":  "article_011",
+    "title":  "Gent nomineert zeven kandidaten voor Burgemeesterstitel 2027",
+    "category":  "GENT",
+    "size":  "groot",
+    "components":  [
+                       {
+                           "type":  "image",
+                           "src":  "https://picsum.photos/800/400?random=11",
+                           "alt":  "Gent verkiezingen"
+                       },
+                       {
+                           "type":  "text",
+                           "content":  "Een recordaantal kandidaten dient zich aan voor de prestigieuze rol van Burgemeester van Gent."
+                       },
+                       {
+                           "type":  "image",
+                           "src":  "https://picsum.photos/900/450?random=111",
+                           "alt":  "Stadhuis Gent"
+                       },
+                       {
+                           "type":  "text",
+                           "content":  "De selectieprocedure wordt dit jaar strenger, met extra debatten en publieke bevragingen."
+                       }
+                   ],
+    "created_at":  "2026-02-14T10:30:00",
+    "updated_at":  "2026-02-14T10:30:00",
+    "group":  "de miniatuurwereld"
 }

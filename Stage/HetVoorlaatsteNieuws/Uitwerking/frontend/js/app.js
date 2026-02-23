@@ -37,10 +37,49 @@ class ArticleLoader {
         return null;
     }
 
+    findFirstArticleWithImage(groupsData) {
+        const allArticles = Object.values(groupsData || {}).flat();
+        for (const article of allArticles) {
+            if (this.getFirstImage(article)) {
+                return article;
+            }
+        }
+        return allArticles[0] || null;
+    }
+
+    findLatestArticleWithImage(groupsData) {
+        const allArticles = Object.values(groupsData || {}).flat();
+        const sorted = allArticles.slice().sort((a, b) => {
+            const aTime = new Date(a.created_at || 0).getTime();
+            const bTime = new Date(b.created_at || 0).getTime();
+            return bTime - aTime;
+        });
+        for (const article of sorted) {
+            if (this.getFirstImage(article)) {
+                return article;
+            }
+        }
+        return sorted[0] || null;
+    }
+
+    findFirstImageFromGroups(groupsData) {
+        const allArticles = Object.values(groupsData || {}).flat();
+        for (const article of allArticles) {
+            const image = this.getFirstImage(article);
+            if (image) {
+                return image;
+            }
+        }
+        return null;
+    }
+
     createGroupSection(groupName, articles) {
         const section = document.createElement('div');
         section.className = 'group-section';
-        if (groupName === 'het klein nieuws') {
+        const isLargeSize = (size) => size === 'groot' || size === 'tekst';
+        const isSmallSize = (size) => size === 'klein';
+        const isKleinStyleGroup = groupName === 'het klein nieuws' || groupName === 'de miniatuurwereld';
+        if (isKleinStyleGroup) {
             section.className = 'klein-nieuws-section';
         }
         if (groupName !== 'standaard' && groupName === 'standaard') {
@@ -48,7 +87,7 @@ class ArticleLoader {
             header.className = 'group-header';
             header.innerHTML = `<h2 class="group-title">${groupName.toUpperCase()}</h2>`;
             section.appendChild(header);
-        } else if (groupName === 'het klein nieuws') {
+        } else if (isKleinStyleGroup) {
             const header = document.createElement('div');
             header.className = 'klein-nieuws-header';
             header.innerHTML = `<h2>${groupName}</h2>`;
@@ -61,14 +100,14 @@ class ArticleLoader {
             let i = 0;
             while (i < articles.length) {
                 const article = articles[i];
-                if (article.size === 'groot') {
+                if (isLargeSize(article.size)) {
                     // randomize left/right
                     const grootLeft = Math.random() < 0.5;
                     const row = [article];
                     i++;
                     const smalls = [];
                     for (let k = 0; k < 2 && i < articles.length; k++) {
-                        if (articles[i].size === 'klein') {
+                        if (isSmallSize(articles[i].size)) {
                             smalls.push(articles[i]);
                             i++;
                         } else {
@@ -84,7 +123,7 @@ class ArticleLoader {
                 } else {
                     const row = [article];
                     i++;
-                    while (row.length < 3 && i < articles.length && articles[i].size === 'klein') {
+                    while (row.length < 3 && i < articles.length && isSmallSize(articles[i].size)) {
                         row.push(articles[i]);
                         i++;
                     }
@@ -93,9 +132,9 @@ class ArticleLoader {
             }
             for (let r = 1; r < rows.length; r++) {
                 const row = rows[r];
-                if (row.length === 2 && row.every(a => a.size === 'klein')) {
+                if (row.length === 2 && row.every(a => isSmallSize(a.size))) {
                     const prev = rows[r - 1];
-                    if (prev.every(a => a.size === 'klein') && prev.length < 3) {
+                    if (prev.every(a => isSmallSize(a.size)) && prev.length < 3) {
                         prev.push(row.shift());
                     }
                 }
@@ -103,12 +142,12 @@ class ArticleLoader {
             rows.forEach(row => {
                 const rowEl = document.createElement('div');
                 rowEl.className = 'standaard-row';
-                if (row.length === 3 && row.some(a => a.size === 'groot')) {
+                if (row.length === 3 && row.some(a => isLargeSize(a.size))) {
                     rowEl.style.display = 'grid';
                     rowEl.style.gridTemplateColumns = '1fr 1fr';
                     rowEl.style.gap = '20px';
-                    const groot = row.find(a => a.size === 'groot');
-                    const smalls = row.filter(a => a.size === 'klein');
+                    const groot = row.find(a => isLargeSize(a.size));
+                    const smalls = row.filter(a => isSmallSize(a.size));
                     const grootCard = this.createArticleCard(groot);
                     grootCard.classList.add('large-item');
                     // randomize groot left/right
@@ -151,7 +190,7 @@ class ArticleLoader {
                         rowEl.appendChild(card);
                     });
                 } else if (row.length === 2) {
-                    if (row.every(a => a.size === 'klein')) {
+                    if (row.every(a => isSmallSize(a.size))) {
                         rowEl.style.display = 'grid';
                         rowEl.style.gridTemplateColumns = '1fr';
                     } else {
@@ -161,7 +200,7 @@ class ArticleLoader {
                     rowEl.style.gap = '20px';
                     row.forEach(item => {
                         const card = this.createArticleCard(item);
-                        if (item.size === 'groot') card.classList.add('large-item');
+                        if (isLargeSize(item.size)) card.classList.add('large-item');
                         else card.classList.add('small-item');
                         rowEl.appendChild(card);
                     });
@@ -170,7 +209,7 @@ class ArticleLoader {
                     rowEl.style.gridTemplateColumns = '1fr';
                     rowEl.style.gap = '20px';
                     const card = this.createArticleCard(row[0]);
-                    if (row[0].size === 'groot') card.classList.add('large-item');
+                    if (isLargeSize(row[0].size)) card.classList.add('large-item');
                     else card.classList.add('small-item');
                     rowEl.appendChild(card);
                 }
@@ -180,13 +219,13 @@ class ArticleLoader {
             let gridClass = 'group-grid-dynamic';
             if (groupName === 'featured') {
                 gridClass = 'featured-grid-dynamic';
-            } else if (groupName === 'het klein nieuws') {
+            } else if (isKleinStyleGroup) {
                 gridClass = 'klein-nieuws-grid-dynamic';
             }
             container.className = gridClass;
             articles.forEach((article) => {
                 const card = this.createArticleCard(article);
-                if (article.size === 'groot') {
+                if (isLargeSize(article.size)) {
                     card.classList.add('large-item');
                 } else {
                     card.classList.add('small-item');
@@ -212,19 +251,34 @@ class ArticleLoader {
         if (article.category && article.category.toLowerCase() !== 'standaard') {
             categoryLabel = `<div class="article-label">${article.category.toUpperCase()}</div>`;
         }
-        const html = `
-            <img src="${imageUrl || 'https://via.placeholder.com/800x450'}" 
-                 alt="${article.title}" 
-                 class="article-image"
-                 loading="lazy"
-                 onerror="this.src='https://via.placeholder.com/800x450'">
-            <div class="article-overlay">
-                ${categoryLabel}
-                <h3 class="article-title">${article.title}</h3>
-            </div>
-        `;
+        const isTextOnly = article.size === 'tekst';
+        const html = isTextOnly
+            ? `
+                <div class="article-text-block">
+                    ${categoryLabel}
+                    <div class="article-text-title">${article.title}</div>
+                </div>
+            `
+            : `
+                <img src="${imageUrl || 'https://via.placeholder.com/800x450'}" 
+                     alt="${article.title}" 
+                     class="article-image"
+                     loading="lazy"
+                     onerror="this.src='https://via.placeholder.com/800x450'">
+                <div class="article-overlay">
+                    ${categoryLabel}
+                    <h3 class="article-title">${article.title}</h3>
+                </div>
+            `;
+        if (isTextOnly) {
+            card.classList.add('article-card-text');
+        }
         card.innerHTML = html;
-        card.addEventListener('click', () => this.showArticleDetail(article));
+        card.addEventListener('click', () => {
+            if (article.id) {
+                window.location.href = `/article/${article.id}`;
+            }
+        });
         return card;
     }
 
@@ -294,7 +348,6 @@ class ArticleLoader {
         content.innerHTML = `
             <h1 style="font-family: 'Merriweather', Georgia, serif; font-size: 32px; margin-bottom: 15px; color: #000;">${article.title}</h1>
             <div style="color: #666; margin-bottom: 25px; border-bottom: 1px solid #ddd; padding-bottom: 15px;">
-                <span style="margin-right: 20px;"><strong>By:</strong> ${article.author || 'Unknown'}</span>
                 <span><strong>Category:</strong> ${article.category || 'General'}</span>
             </div>
             ${componentsHtml}
@@ -317,65 +370,107 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loader = new ArticleLoader();
     const container = document.getElementById('groupsContainer');
     const kleinContainer = document.getElementById('kleinContainer');
+    const miniContainer = document.getElementById('miniContainer');
     const loadingEl = document.getElementById('loading');
     const errorEl = document.getElementById('error');
     const heroImage = document.getElementById('heroImage');
+    const heroTitle = document.getElementById('heroTitle');
+    const heroLink = document.getElementById('heroLink');
+    const newsletterTitle = document.getElementById('newsletterTitle');
+    const newsletterText = document.getElementById('newsletterText');
+    const newsletterButton = document.getElementById('newsletterButton');
+    const workshopTitle = document.getElementById('workshopTitle');
+    const workshopText = document.getElementById('workshopText');
+    const workshopButton = document.getElementById('workshopButton');
 
     try {
-        const groupsData = await loader.loadGroups();
+        const [groupsData, siteSettings, articlesData] = await Promise.all([
+            loader.loadGroups(),
+            fetch('http://127.0.0.1:5000/api/site').then(res => res.ok ? res.json() : null),
+            fetch('http://127.0.0.1:5000/api/articles').then(res => res.ok ? res.json() : [])
+        ]);
         loadingEl.style.display = 'none';
 
-        // separate out klein nieuws articles
-        const kleinArticles = groupsData['het klein nieuws'] || [];
+        const groupNames = Object.keys(groupsData || {});
+        const shuffledGroups = groupNames
+            .map(name => ({ name, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(entry => entry.name);
 
-        // choose one random special group from the remaining ones (e.g. politiek)
-        const specialGroups = Object.keys(groupsData).filter(g => g !== 'standaard' && g !== 'het klein nieuws');
-        let chosenGroup = null;
-        if (specialGroups.length > 0) {
-            chosenGroup = specialGroups[Math.floor(Math.random() * specialGroups.length)];
-        }
-
-        // build merged list for everything except klein nieuws and chosenGroup
-        let merged = [];
-        if (groupsData['standaard']) {
-            merged = [...groupsData['standaard']];
-        }
-        Object.keys(groupsData).forEach(groupName => {
-            if (groupName === 'standaard' || groupName === 'het klein nieuws' || groupName === chosenGroup) return;
-            groupsData[groupName].forEach(article => {
-                const idx = Math.floor(Math.random() * (merged.length + 1));
-                merged.splice(idx, 0, article);
-            });
-        });
-
-        // set hero image based on the first item in the merged list (fallback to klein if empty)
-        let heroSource = merged.length > 0 ? merged[0] : (kleinArticles[0] || null);
-        if (heroSource) {
-            const firstImage = loader.getFirstImage(heroSource);
-            if (firstImage && heroImage) {
-                heroImage.style.backgroundImage = `url('${firstImage}')`;
+        // set hero image based on the latest article with an image across all articles
+        const heroArticle = loader.findLatestArticleWithImage({ all: articlesData || [] });
+        if (heroArticle) {
+            const heroSrc = loader.getFirstImage(heroArticle);
+            if (heroSrc && heroImage) {
+                heroImage.style.backgroundImage = `url('${heroSrc}')`;
+            }
+            if (heroTitle) {
+                heroTitle.textContent = heroArticle.title || '';
+            }
+            if (heroLink) {
+                heroLink.href = heroArticle.id ? `/article/${heroArticle.id}` : '#';
             }
         }
 
-        // render klein nieuws separately into sidebar
-        if (kleinArticles.length > 0 && kleinContainer) {
-            const section = loader.createGroupSection('het klein nieuws', kleinArticles);
-            kleinContainer.appendChild(section);
-        }
 
-        // render the randomly chosen special group if we picked one earlier
-        if (chosenGroup) {
-            const articles = groupsData[chosenGroup];
-            if (articles && articles.length > 0) {
-                const section = loader.createGroupSection(chosenGroup, articles);
-                container.appendChild(section);
+        if (siteSettings) {
+            if (newsletterTitle) newsletterTitle.textContent = siteSettings.newsletterTitle || '';
+            if (newsletterText) newsletterText.textContent = siteSettings.newsletterText || '';
+            if (newsletterButton) {
+                newsletterButton.textContent = siteSettings.newsletterButtonText || '';
+                newsletterButton.href = siteSettings.newsletterButtonLink || '#';
+            }
+            if (workshopTitle) workshopTitle.textContent = siteSettings.workshopTitle || '';
+            if (workshopText) workshopText.textContent = siteSettings.workshopText || '';
+            if (workshopButton) {
+                workshopButton.textContent = siteSettings.workshopButtonText || '';
+                workshopButton.href = siteSettings.workshopButtonLink || '#';
             }
         }
 
-        // render merged content into main container
-        if (merged.length > 0) {
-            const section = loader.createGroupSection('standaard', merged);
-            container.appendChild(section);
+        const kleinArticles = (groupsData['het klein nieuws'] || []).slice(0, 2);
+        const miniatuurArticles = (groupsData['de miniatuurwereld'] || []).slice(0, 4);
+
+        if (kleinContainer) kleinContainer.innerHTML = '';
+        if (miniContainer) miniContainer.innerHTML = '';
+
+        const kleinSection = kleinArticles.length > 0
+            ? loader.createGroupSection('het klein nieuws', kleinArticles)
+            : null;
+        const miniSection = miniatuurArticles.length > 0
+            ? loader.createGroupSection('de miniatuurwereld', miniatuurArticles)
+            : null;
+
+        if (kleinSection && miniSection && kleinContainer && miniContainer) {
+            const swapSides = Math.random() < 0.5;
+            if (swapSides) {
+                kleinSection.classList.add('stagger');
+                miniContainer.appendChild(kleinSection);
+                kleinContainer.appendChild(miniSection);
+            } else {
+                miniSection.classList.add('stagger');
+                kleinContainer.appendChild(kleinSection);
+                miniContainer.appendChild(miniSection);
+            }
+            kleinContainer.style.display = 'block';
+            miniContainer.style.display = 'block';
+        } else if (kleinSection && kleinContainer) {
+            kleinContainer.appendChild(kleinSection);
+            kleinContainer.style.display = 'block';
+            if (miniContainer) miniContainer.style.display = 'none';
+        } else if (miniSection && kleinContainer) {
+            kleinContainer.appendChild(miniSection);
+            kleinContainer.style.display = 'block';
+            if (miniContainer) miniContainer.style.display = 'none';
+        } else {
+            if (kleinContainer) kleinContainer.style.display = 'none';
+            if (miniContainer) miniContainer.style.display = 'none';
+        }
+
+        const ungroupedArticles = (articlesData || []).filter(article => !article.group);
+        if (ungroupedArticles.length > 0) {
+            const mainSection = loader.createGroupSection('standaard', ungroupedArticles);
+            container.appendChild(mainSection);
         }
     } catch (error) {
         loadingEl.style.display = 'none';

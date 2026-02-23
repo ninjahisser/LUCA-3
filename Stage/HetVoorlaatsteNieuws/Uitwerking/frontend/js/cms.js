@@ -1,6 +1,6 @@
 // CMS logica voor artikelbeheer en statistieken
 
-const API_BASE = '/api'; // Pas aan indien nodig
+const API_BASE = 'http://127.0.0.1:5000/api'; // Backend API base
 
 // Statistieken ophalen en tonen
 async function loadStats() {
@@ -9,16 +9,41 @@ async function loadStats() {
     try {
         const res = await fetch(`${API_BASE}/stats`);
         const stats = await res.json();
+        const views = stats.viewsPerArticle || [];
+        const maxViews = Math.max(1, ...views.map(a => a.views || 0));
         statsContainer.innerHTML = `
-            <ul>
-                <li>Meeste bezoekers (laatste 7 dagen): <b>${stats.mostVisited.title}</b> (${stats.mostVisited.views})</li>
-                <li>Totaal aantal bezoekers: <b>${stats.totalViews}</b></li>
-                <li>Meest aangeklikte artikel: <b>${stats.mostClicked.title}</b> (${stats.mostClicked.clicks})</li>
-            </ul>
-            <h3>Views per artikel</h3>
-            <ul>
-                ${stats.viewsPerArticle.map(a => `<li>${a.title}: ${a.views}</li>`).join('')}
-            </ul>
+            <div class="stats-cards">
+                <div class="stats-card">
+                    <div class="stats-label">Meeste bezoekers (laatste 7 dagen)</div>
+                    <div class="stats-value">${stats.mostVisited.title} <span>(${stats.mostVisited.views})</span></div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-label">Totaal aantal bezoekers</div>
+                    <div class="stats-value">${stats.totalViews}</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-label">Meest aangeklikte artikel</div>
+                    <div class="stats-value">${stats.mostClicked.title} <span>(${stats.mostClicked.clicks})</span></div>
+                </div>
+            </div>
+            <div class="views-section">
+                <h3>Views per artikel</h3>
+                <div class="views-list">
+                    ${views.map(a => {
+                        const safeViews = a.views || 0;
+                        const pct = Math.round((safeViews / maxViews) * 100);
+                        return `
+                            <div class="views-item">
+                                <div class="views-title">${a.title}</div>
+                                <div class="views-bar">
+                                    <div class="views-bar-fill" style="width:${pct}%"></div>
+                                </div>
+                                <div class="views-value">${safeViews}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
         `;
     } catch (e) {
         statsContainer.innerHTML = 'Fout bij laden van statistieken.';
@@ -34,8 +59,9 @@ async function loadArticles() {
         const articles = await res.json();
         container.innerHTML = articles.map(article => `
             <div class="cms-article-card">
-                <h3>${article.title}</h3>
+                <h3><a class="cms-article-link" href="/article/${article.id}" target="_blank" rel="noopener">${article.title}</a></h3>
                 <button onclick="editArticle('${article.id}')">Aanpassen</button>
+                <a class="cms-button cms-button-small" href="/article/${article.id}" target="_blank" rel="noopener">Bekijk</a>
                 <button onclick="deleteArticle('${article.id}')">Verwijderen</button>
                 <span>Views: ${article.views} | Clicks: ${article.clicks}</span>
             </div>
@@ -47,8 +73,7 @@ async function loadArticles() {
 
 // Artikel aanpassen
 window.editArticle = function(id) {
-    alert('Artikel aanpassen: ' + id);
-    // Implementeer modal/form voor edit
+    window.location.href = `cms-edit.html?id=${encodeURIComponent(id)}`;
 }
 
 // Artikel verwijderen
@@ -66,11 +91,66 @@ window.deleteArticle = async function(id) {
 const addBtn = document.getElementById('add-article-btn');
 if (addBtn) {
     addBtn.onclick = () => {
-        alert('Nieuw artikel toevoegen');
-        // Implementeer modal/form voor toevoegen
+        window.location.href = 'cms-create.html';
     };
 }
 
 // Init
+async function loadHomepageSettings() {
+    const statusEl = document.getElementById('homepage-status');
+    try {
+        const res = await fetch(`${API_BASE}/site`);
+        if (!res.ok) {
+            throw new Error('Instellingen niet gevonden');
+        }
+        const data = await res.json();
+        document.getElementById('newsletterTitleInput').value = data.newsletterTitle || '';
+        document.getElementById('newsletterTextInput').value = data.newsletterText || '';
+        document.getElementById('newsletterButtonTextInput').value = data.newsletterButtonText || '';
+        document.getElementById('newsletterButtonLinkInput').value = data.newsletterButtonLink || '';
+        document.getElementById('workshopTitleInput').value = data.workshopTitle || '';
+        document.getElementById('workshopTextInput').value = data.workshopText || '';
+        document.getElementById('workshopButtonTextInput').value = data.workshopButtonText || '';
+        document.getElementById('workshopButtonLinkInput').value = data.workshopButtonLink || '';
+        if (statusEl) statusEl.textContent = '';
+    } catch (e) {
+        if (statusEl) statusEl.textContent = 'Fout bij laden van homepage instellingen.';
+    }
+}
+
+async function saveHomepageSettings() {
+    const statusEl = document.getElementById('homepage-status');
+    if (statusEl) statusEl.textContent = 'Opslaan...';
+    const payload = {
+        newsletterTitle: document.getElementById('newsletterTitleInput').value.trim(),
+        newsletterText: document.getElementById('newsletterTextInput').value.trim(),
+        newsletterButtonText: document.getElementById('newsletterButtonTextInput').value.trim(),
+        newsletterButtonLink: document.getElementById('newsletterButtonLinkInput').value.trim(),
+        workshopTitle: document.getElementById('workshopTitleInput').value.trim(),
+        workshopText: document.getElementById('workshopTextInput').value.trim(),
+        workshopButtonText: document.getElementById('workshopButtonTextInput').value.trim(),
+        workshopButtonLink: document.getElementById('workshopButtonLinkInput').value.trim()
+    };
+    try {
+        const res = await fetch(`${API_BASE}/site`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+            throw new Error('Opslaan mislukt');
+        }
+        if (statusEl) statusEl.textContent = 'Opgeslagen.';
+    } catch (e) {
+        if (statusEl) statusEl.textContent = 'Fout bij opslaan.';
+    }
+}
+
+const saveHomepageBtn = document.getElementById('save-homepage-btn');
+if (saveHomepageBtn) {
+    saveHomepageBtn.addEventListener('click', saveHomepageSettings);
+}
+
 loadStats();
 loadArticles();
+loadHomepageSettings();
