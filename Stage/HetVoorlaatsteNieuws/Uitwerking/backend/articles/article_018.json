@@ -1,15 +1,19 @@
 {
-    "id":  "article_018",
-    "title":  "WE KIEZEN VOOR LUIDE STEMMEN",
-    "category":  "STANDAARD",
-    "group":  "het klein nieuws",
-    "size":  "tekst",
-    "components":  [
-                       {
-                           "type":  "text",
-                           "content":  "Een schreeuwerig tekstartikel dat meteen de aandacht trekt en ruimte geeft aan een duidelijke boodschap."
-                       }
-                   ],
-    "created_at":  "2026-02-23T10:00:00",
-    "updated_at":  "2026-02-23T19:58:58.064412"
+  "id": "article_018",
+  "title": "nieuwe titel hallo",
+  "category": "STANDAARD",
+  "group": "standaard",
+  "size": "groot",
+  "components": [
+    {
+      "type": "text",
+      "content": "hallo"
+    },
+    {
+      "type": "text",
+      "content": "tekst deel 2"
+    }
+  ],
+  "created_at": "2026-02-23T10:00:00",
+  "updated_at": "2026-02-24T09:26:35.598967"
 }
