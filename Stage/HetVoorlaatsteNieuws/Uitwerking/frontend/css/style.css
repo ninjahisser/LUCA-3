@@ -786,6 +786,9 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     margin-bottom: 20px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .standaard-row.groot-row {
@@ -805,6 +808,7 @@ body {
 
 .standaard-grid .small-item {
     /* default width overridden inline */
+    max-width: 100%;
 }
 
 .group-header {
@@ -1007,6 +1011,7 @@ body {
 .article-card.large-item {
     height: 400px;
     width: 100%;
+    max-width: 600px;
 }
 
 .article-image {
