@@ -190,6 +190,49 @@ def serve_cms_create():
 def serve_article(article_id):
     return send_from_directory(FRONTEND_DIR, 'article.html')
 
+@app.route('/api/upload', methods=['POST'])
+def upload_image():
+    """Upload image with naming convention: article_id_index.ext"""
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'Geen bestand gevonden'}), 400
+        
+        file = request.files['file']
+        article_id = request.form.get('article_id', '')
+        index = request.form.get('index', '0')
+        
+        if not file or not article_id:
+            return jsonify({'error': 'Artikel ID en bestand required'}), 400
+        
+        # Get file extension
+        filename = file.filename or 'image'
+        ext = os.path.splitext(filename)[1].lower()
+        if not ext:
+            ext = '.jpg'
+        
+        # Create images directory if not exists
+        images_dir = os.path.join(BASE_DIR, 'images')
+        if not os.path.exists(images_dir):
+            os.makedirs(images_dir)
+        
+        # Save with naming convention: article_id_index.ext
+        new_filename = f"{article_id}_{index}{ext}"
+        filepath = os.path.join(images_dir, new_filename)
+        file.save(filepath)
+        
+        # Return relative path for storage
+        image_url = f"/images/{new_filename}"
+        return jsonify({'url': image_url}), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    """Serve uploaded images"""
+    images_dir = os.path.join(BASE_DIR, 'images')
+    return send_from_directory(images_dir, filename)
+
 @app.route('/<path:filename>')
 def serve_static(filename):
     return send_from_directory(FRONTEND_DIR, filename)

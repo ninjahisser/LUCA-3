@@ -1,28 +1,24 @@
 {
-    "id":  "article_014",
-    "title":  "Startup hub Gent trekt internationale investeerders aan",
-    "category":  "ECONOMISCH",
-    "size":  "groot",
-    "components":  [
-                       {
-                           "type":  "image",
-                           "src":  "https://picsum.photos/800/400?random=14",
-                           "alt":  "Startup hub"
-                       },
-                       {
-                           "type":  "text",
-                           "content":  "Een nieuw innovatie centrum in Gent heeft al tientallen start-ups aangetrokken met miljoenen euro\u0027s aan investeringen."
-                       },
-                       {
-                           "type":  "image",
-                           "src":  "https://picsum.photos/900/450?random=114",
-                           "alt":  "Startup hub"
-                       },
-                       {
-                           "type":  "text",
-                           "content":  "Mentorprogramma\u0027s en internationale partnerschappen zorgen voor snelle groei."
-                       }
-                   ],
-    "created_at":  "2026-02-11T09:45:00",
-    "updated_at":  "2026-02-11T09:45:00"
+  "id": "article_014",
+  "title": "Een stapel boeken in de bib?",
+  "category": "ECONOMISCH",
+  "size": "groot",
+  "components": [
+    {
+      "type": "image",
+      "src": "/images/article_014_0.png",
+      "alt": "Startup hub"
+    },
+    {
+      "type": "text",
+      "content": "Een nieuw innovatie centrum in Gent heeft al tientallen start-ups aangetrokken met miljoenen euro's aan investeringen."
+    },
+    {
+      "type": "text",
+      "content": "Mentorprogramma's en internationale partnerschappen zorgen voor snelle groei."
+    }
+  ],
+  "created_at": "2026-02-11T09:45:00",
+  "updated_at": "2026-03-02T22:41:01.363041",
+  "group": "standaard"
 }

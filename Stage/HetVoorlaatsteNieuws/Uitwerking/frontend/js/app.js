@@ -1,6 +1,7 @@
 class ArticleLoader {
-    constructor(apiUrl = 'http://127.0.0.1:5000/api') {
+    constructor(apiUrl = API_BASE_URL) {
         this.apiUrl = apiUrl;
+        this.pendingStandaardArticles = [];
     }
 
     async loadGroups() {
@@ -97,121 +98,83 @@ class ArticleLoader {
         if (groupName === 'standaard') {
             container.className = 'standaard-grid';
             const rows = [];
-            let i = 0;
-            while (i < articles.length) {
-                const article = articles[i];
-                if (isLargeSize(article.size)) {
-                    // randomize left/right
-                    const grootLeft = Math.random() < 0.5;
-                    const row = [article];
-                    i++;
-                    const smalls = [];
-                    for (let k = 0; k < 2 && i < articles.length; k++) {
-                        if (isSmallSize(articles[i].size)) {
-                            smalls.push(articles[i]);
-                            i++;
-                        } else {
-                            break;
-                        }
-                    }
-                    if (grootLeft) {
-                        row.push(...smalls);
-                    } else {
-                        row.unshift(...smalls);
-                    }
-                    rows.push(row);
-                } else {
-                    const row = [article];
-                    i++;
-                    while (row.length < 3 && i < articles.length && isSmallSize(articles[i].size)) {
-                        row.push(articles[i]);
-                        i++;
-                    }
-                    rows.push(row);
+            const sourceArticles = [
+                ...(this.pendingStandaardArticles || []),
+                ...(articles || [])
+            ];
+            this.pendingStandaardArticles = [];
+
+            const largeQueue = sourceArticles.filter(article => isLargeSize(article.size));
+            const smallQueue = sourceArticles.filter(article => isSmallSize(article.size));
+            let placeLargeLeft = true;
+
+            while (true) {
+                // Full rows only:
+                // 1) GROOT - KLEIN/KLEIN
+                // 2) KLEIN/KLEIN - GROOT
+                if (largeQueue.length > 0 && smallQueue.length >= 2) {
+                    rows.push({
+                        layout: placeLargeLeft ? 'large-left' : 'large-right',
+                        groot: largeQueue.shift(),
+                        smalls: [smallQueue.shift(), smallQueue.shift()]
+                    });
+                    placeLargeLeft = !placeLargeLeft;
+                    continue;
                 }
-            }
-            for (let r = 1; r < rows.length; r++) {
-                const row = rows[r];
-                if (row.length === 2 && row.every(a => isSmallSize(a.size))) {
-                    const prev = rows[r - 1];
-                    if (prev.every(a => isSmallSize(a.size)) && prev.length < 3) {
-                        prev.push(row.shift());
-                    }
+
+                // 3) KLEIN/KLEIN/KLEIN (stacked)
+                if (smallQueue.length >= 3) {
+                    rows.push({
+                        layout: 'small-stack-3',
+                        smalls: [smallQueue.shift(), smallQueue.shift(), smallQueue.shift()]
+                    });
+                    continue;
                 }
+
+                // Stop when no full row can be built anymore.
+                break;
             }
+
+            this.pendingStandaardArticles = [...largeQueue, ...smallQueue];
+
             rows.forEach(row => {
                 const rowEl = document.createElement('div');
                 rowEl.className = 'standaard-row';
-                if (row.length === 3 && row.some(a => isLargeSize(a.size))) {
+
+                if (row.layout === 'large-left' || row.layout === 'large-right') {
+                    rowEl.classList.add('groot-row');
                     rowEl.style.display = 'grid';
-                    rowEl.style.gridTemplateColumns = '1fr 1fr';
+                    rowEl.style.gridTemplateColumns = '2fr 1fr';
                     rowEl.style.gap = '20px';
-                    const groot = row.find(a => isLargeSize(a.size));
-                    const smalls = row.filter(a => isSmallSize(a.size));
-                    const grootCard = this.createArticleCard(groot);
+
+                    const grootCard = this.createArticleCard(row.groot);
                     grootCard.classList.add('large-item');
-                    // randomize groot left/right
-                    if (Math.random() < 0.5) {
-                        // groot links
+
+                    const smallContainer = document.createElement('div');
+                    smallContainer.className = 'small-stack';
+                    row.smalls.forEach(item => {
+                        const card = this.createArticleCard(item);
+                        card.classList.add('small-item');
+                        smallContainer.appendChild(card);
+                    });
+
+                    if (row.layout === 'large-left') {
                         rowEl.appendChild(grootCard);
-                        // klein rechts in een column
-                        const smallContainer = document.createElement('div');
-                        smallContainer.style.display = 'flex';
-                        smallContainer.style.flexDirection = 'column';
-                        smallContainer.style.gap = '20px';
-                        smalls.forEach(item => {
-                            const card = this.createArticleCard(item);
-                            card.classList.add('small-item');
-                            smallContainer.appendChild(card);
-                        });
                         rowEl.appendChild(smallContainer);
                     } else {
-                        // klein links
-                        const smallContainer = document.createElement('div');
-                        smallContainer.style.display = 'flex';
-                        smallContainer.style.flexDirection = 'column';
-                        smallContainer.style.gap = '20px';
-                        smalls.forEach(item => {
-                            const card = this.createArticleCard(item);
-                            card.classList.add('small-item');
-                            smallContainer.appendChild(card);
-                        });
                         rowEl.appendChild(smallContainer);
-                        // groot rechts
                         rowEl.appendChild(grootCard);
                     }
-                } else if (row.length === 3) {
-                    rowEl.style.display = 'grid';
-                    rowEl.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                } else {
+                    rowEl.classList.add('small-stack-3-row');
+                    rowEl.style.display = 'flex';
+                    rowEl.style.flexDirection = 'column';
                     rowEl.style.gap = '20px';
-                    row.forEach(item => {
+                    row.smalls.forEach(item => {
                         const card = this.createArticleCard(item);
                         card.classList.add('small-item');
                         rowEl.appendChild(card);
                     });
-                } else if (row.length === 2) {
-                    if (row.every(a => isSmallSize(a.size))) {
-                        rowEl.style.display = 'grid';
-                        rowEl.style.gridTemplateColumns = '1fr';
-                    } else {
-                        rowEl.style.display = 'grid';
-                        rowEl.style.gridTemplateColumns = '1fr 1fr';
-                    }
-                    rowEl.style.gap = '20px';
-                    row.forEach(item => {
-                        const card = this.createArticleCard(item);
-                        if (isLargeSize(item.size)) card.classList.add('large-item');
-                        else card.classList.add('small-item');
-                        rowEl.appendChild(card);
-                    });
-                } else {
-                    rowEl.style.display = 'grid';
-                    rowEl.style.gridTemplateColumns = '1fr';
-                    rowEl.style.gap = '20px';
-                    const card = this.createArticleCard(row[0]);
-                    if (isLargeSize(row[0].size)) card.classList.add('large-item');
-                    else card.classList.add('small-item');
-                    rowEl.appendChild(card);
                 }
                 container.appendChild(rowEl);
             });
@@ -368,6 +331,7 @@ class ArticleLoader {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
     const loader = new ArticleLoader();
+    loader.pendingStandaardArticles = [];
     const container = document.getElementById('groupsContainer');
     const kleinContainer = document.getElementById('kleinContainer');
     const miniContainer = document.getElementById('miniContainer');
@@ -428,54 +392,79 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
+        // Hide the side containers since we'll put everything in main content
+        if (kleinContainer) kleinContainer.style.display = 'none';
+        if (miniContainer) miniContainer.style.display = 'none';
+
+        // Get all article groups - include both ungrouped and 'standaard' group articles
+        const ungroupedArticles = (articlesData || []).filter(article => !article.group || article.group === 'standaard');
         const kleinArticles = (groupsData['het klein nieuws'] || []).slice(0, 2);
         const miniatuurArticles = (groupsData['de miniatuurwereld'] || []).slice(0, 4);
 
-        if (kleinContainer) kleinContainer.innerHTML = '';
-        if (miniContainer) miniContainer.innerHTML = '';
-
-        const kleinSection = kleinArticles.length > 0
-            ? loader.createGroupSection('het klein nieuws', kleinArticles)
-            : null;
-        const miniSection = miniatuurArticles.length > 0
-            ? loader.createGroupSection('de miniatuurwereld', miniatuurArticles)
-            : null;
-
-        if (kleinSection && miniSection && kleinContainer && miniContainer) {
-            const swapSides = Math.random() < 0.5;
-            if (swapSides) {
-                kleinSection.classList.add('stagger');
-                miniContainer.appendChild(kleinSection);
-                kleinContainer.appendChild(miniSection);
-            } else {
-                miniSection.classList.add('stagger');
-                kleinContainer.appendChild(kleinSection);
-                miniContainer.appendChild(miniSection);
-            }
-            kleinContainer.style.display = 'block';
-            miniContainer.style.display = 'block';
-        } else if (kleinSection && kleinContainer) {
-            kleinContainer.appendChild(kleinSection);
-            kleinContainer.style.display = 'block';
-            if (miniContainer) miniContainer.style.display = 'none';
-        } else if (miniSection && kleinContainer) {
-            kleinContainer.appendChild(miniSection);
-            kleinContainer.style.display = 'block';
-            if (miniContainer) miniContainer.style.display = 'none';
-        } else {
-            if (kleinContainer) kleinContainer.style.display = 'none';
-            if (miniContainer) miniContainer.style.display = 'none';
-        }
-
-        const ungroupedArticles = (articlesData || []).filter(article => !article.group);
         if (ungroupedArticles.length > 0) {
-            const mainSection = loader.createGroupSection('standaard', ungroupedArticles);
-            container.appendChild(mainSection);
+            // Split articles into chunks and insert special sections randomly
+            const totalArticles = ungroupedArticles.length;
+            const sections = [];
+            
+            // Determine random insertion points for special sections
+            const insertPoints = [];
+            if (kleinArticles.length > 0) {
+                // Insert after 30-70% of articles
+                insertPoints.push({ 
+                    position: Math.floor(totalArticles * (0.3 + Math.random() * 0.4)),
+                    section: loader.createGroupSection('het klein nieuws', kleinArticles)
+                });
+            }
+            if (miniatuurArticles.length > 0) {
+                // Insert after 40-80% of articles
+                insertPoints.push({ 
+                    position: Math.floor(totalArticles * (0.4 + Math.random() * 0.4)),
+                    section: loader.createGroupSection('de miniatuurwereld', miniatuurArticles)
+                });
+            }
+            
+            // Sort insert points by position
+            insertPoints.sort((a, b) => a.position - b.position);
+            
+            // Build the content by inserting special sections at the right positions
+            let lastIndex = 0;
+            insertPoints.forEach(insertPoint => {
+                // Add articles up to this insertion point
+                if (insertPoint.position > lastIndex) {
+                    const articlesSlice = ungroupedArticles.slice(lastIndex, insertPoint.position);
+                    if (articlesSlice.length > 0) {
+                        const articleSection = loader.createGroupSection('standaard', articlesSlice);
+                        container.appendChild(articleSection);
+                    }
+                }
+                // Add the special section
+                container.appendChild(insertPoint.section);
+                lastIndex = insertPoint.position;
+            });
+            
+            // Add remaining articles after all insertions
+            if (lastIndex < totalArticles) {
+                const remainingArticles = ungroupedArticles.slice(lastIndex);
+                if (remainingArticles.length > 0) {
+                    const articleSection = loader.createGroupSection('standaard', remainingArticles);
+                    container.appendChild(articleSection);
+                }
+            }
+        } else {
+            // No main articles, just show special sections
+            if (kleinArticles.length > 0) {
+                const kleinSection = loader.createGroupSection('het klein nieuws', kleinArticles);
+                container.appendChild(kleinSection);
+            }
+            if (miniatuurArticles.length > 0) {
+                const miniSection = loader.createGroupSection('de miniatuurwereld', miniatuurArticles);
+                container.appendChild(miniSection);
+            }
         }
     } catch (error) {
         loadingEl.style.display = 'none';
         errorEl.style.display = 'block';
-        errorEl.innerHTML = `<strong>Error loading articles:</strong> ${error.message}<br><small>Make sure the backend server is running at http://127.0.0.1:5000</small>`;
+        errorEl.innerHTML = `<strong>Error loading articles:</strong> ${error.message}<br><small>Make sure the backend server is running at ${API_BASE_URL}</small>`;
     }
 });
 
