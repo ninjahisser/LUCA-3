@@ -1,5 +1,5 @@
 class ArticleLoader {
-    constructor(apiUrl = 'http://127.0.0.1:5000/api') {
+    constructor(apiUrl = API_BASE_URL) {
         this.apiUrl = apiUrl;
     }
 
@@ -428,54 +428,79 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
+        // Hide the side containers since we'll put everything in main content
+        if (kleinContainer) kleinContainer.style.display = 'none';
+        if (miniContainer) miniContainer.style.display = 'none';
+
+        // Get all article groups
+        const ungroupedArticles = (articlesData || []).filter(article => !article.group);
         const kleinArticles = (groupsData['het klein nieuws'] || []).slice(0, 2);
         const miniatuurArticles = (groupsData['de miniatuurwereld'] || []).slice(0, 4);
 
-        if (kleinContainer) kleinContainer.innerHTML = '';
-        if (miniContainer) miniContainer.innerHTML = '';
-
-        const kleinSection = kleinArticles.length > 0
-            ? loader.createGroupSection('het klein nieuws', kleinArticles)
-            : null;
-        const miniSection = miniatuurArticles.length > 0
-            ? loader.createGroupSection('de miniatuurwereld', miniatuurArticles)
-            : null;
-
-        if (kleinSection && miniSection && kleinContainer && miniContainer) {
-            const swapSides = Math.random() < 0.5;
-            if (swapSides) {
-                kleinSection.classList.add('stagger');
-                miniContainer.appendChild(kleinSection);
-                kleinContainer.appendChild(miniSection);
-            } else {
-                miniSection.classList.add('stagger');
-                kleinContainer.appendChild(kleinSection);
-                miniContainer.appendChild(miniSection);
-            }
-            kleinContainer.style.display = 'block';
-            miniContainer.style.display = 'block';
-        } else if (kleinSection && kleinContainer) {
-            kleinContainer.appendChild(kleinSection);
-            kleinContainer.style.display = 'block';
-            if (miniContainer) miniContainer.style.display = 'none';
-        } else if (miniSection && kleinContainer) {
-            kleinContainer.appendChild(miniSection);
-            kleinContainer.style.display = 'block';
-            if (miniContainer) miniContainer.style.display = 'none';
-        } else {
-            if (kleinContainer) kleinContainer.style.display = 'none';
-            if (miniContainer) miniContainer.style.display = 'none';
-        }
-
-        const ungroupedArticles = (articlesData || []).filter(article => !article.group);
         if (ungroupedArticles.length > 0) {
-            const mainSection = loader.createGroupSection('standaard', ungroupedArticles);
-            container.appendChild(mainSection);
+            // Split articles into chunks and insert special sections randomly
+            const totalArticles = ungroupedArticles.length;
+            const sections = [];
+            
+            // Determine random insertion points for special sections
+            const insertPoints = [];
+            if (kleinArticles.length > 0) {
+                // Insert after 30-70% of articles
+                insertPoints.push({ 
+                    position: Math.floor(totalArticles * (0.3 + Math.random() * 0.4)),
+                    section: loader.createGroupSection('het klein nieuws', kleinArticles)
+                });
+            }
+            if (miniatuurArticles.length > 0) {
+                // Insert after 40-80% of articles
+                insertPoints.push({ 
+                    position: Math.floor(totalArticles * (0.4 + Math.random() * 0.4)),
+                    section: loader.createGroupSection('de miniatuurwereld', miniatuurArticles)
+                });
+            }
+            
+            // Sort insert points by position
+            insertPoints.sort((a, b) => a.position - b.position);
+            
+            // Build the content by inserting special sections at the right positions
+            let lastIndex = 0;
+            insertPoints.forEach(insertPoint => {
+                // Add articles up to this insertion point
+                if (insertPoint.position > lastIndex) {
+                    const articlesSlice = ungroupedArticles.slice(lastIndex, insertPoint.position);
+                    if (articlesSlice.length > 0) {
+                        const articleSection = loader.createGroupSection('standaard', articlesSlice);
+                        container.appendChild(articleSection);
+                    }
+                }
+                // Add the special section
+                container.appendChild(insertPoint.section);
+                lastIndex = insertPoint.position;
+            });
+            
+            // Add remaining articles after all insertions
+            if (lastIndex < totalArticles) {
+                const remainingArticles = ungroupedArticles.slice(lastIndex);
+                if (remainingArticles.length > 0) {
+                    const articleSection = loader.createGroupSection('standaard', remainingArticles);
+                    container.appendChild(articleSection);
+                }
+            }
+        } else {
+            // No main articles, just show special sections
+            if (kleinArticles.length > 0) {
+                const kleinSection = loader.createGroupSection('het klein nieuws', kleinArticles);
+                container.appendChild(kleinSection);
+            }
+            if (miniatuurArticles.length > 0) {
+                const miniSection = loader.createGroupSection('de miniatuurwereld', miniatuurArticles);
+                container.appendChild(miniSection);
+            }
         }
     } catch (error) {
         loadingEl.style.display = 'none';
         errorEl.style.display = 'block';
-        errorEl.innerHTML = `<strong>Error loading articles:</strong> ${error.message}<br><small>Make sure the backend server is running at http://127.0.0.1:5000</small>`;
+        errorEl.innerHTML = `<strong>Error loading articles:</strong> ${error.message}<br><small>Make sure the backend server is running at ${API_BASE_URL}</small>`;
     }
 });
 

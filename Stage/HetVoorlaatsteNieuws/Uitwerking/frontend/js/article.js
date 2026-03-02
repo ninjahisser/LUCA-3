@@ -1,4 +1,4 @@
-const API_BASE = 'http://127.0.0.1:5000/api';
+
 
 const loadingEl = document.getElementById('article-loading');
 const errorEl = document.getElementById('article-error');
@@ -52,7 +52,7 @@ async function loadArticle() {
     }
 
     try {
-        const res = await fetch(`${API_BASE}/articles/${encodeURIComponent(articleId)}`);
+        const res = await fetch(`${API_BASE_URL}/articles/${encodeURIComponent(articleId)}`);
         if (!res.ok) {
             throw new Error('Artikel niet gevonden');
         }

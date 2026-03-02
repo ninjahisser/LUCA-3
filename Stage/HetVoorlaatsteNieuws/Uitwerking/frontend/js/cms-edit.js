@@ -1,4 +1,4 @@
-const API_BASE = 'http://127.0.0.1:5000/api';
+
 
 const statusEl = document.getElementById('edit-status');
 const formEl = document.getElementById('edit-form');
@@ -19,7 +19,7 @@ function getArticleId() {
 
 async function loadGroups() {
     try {
-        const res = await fetch(`${API_BASE}/groups`);
+        const res = await fetch(`${API_BASE_URL}/groups`);
         if (!res.ok) {
             throw new Error('Groups niet gevonden');
         }
@@ -159,7 +159,7 @@ async function loadArticle() {
 
     setStatus('Artikel laden...', 'info');
     try {
-        const res = await fetch(`${API_BASE}/articles/${encodeURIComponent(articleId)}`);
+        const res = await fetch(`${API_BASE_URL}/articles/${encodeURIComponent(articleId)}`);
         if (!res.ok) {
             throw new Error('Artikel niet gevonden');
         }
@@ -205,7 +205,7 @@ formEl.addEventListener('submit', async (event) => {
 
     setStatus('Opslaan...', 'info');
     try {
-        const res = await fetch(`${API_BASE}/articles/${encodeURIComponent(articleId)}`, {
+        const res = await fetch(`${API_BASE_URL}/articles/${encodeURIComponent(articleId)}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

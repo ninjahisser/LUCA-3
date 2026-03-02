@@ -1,4 +1,4 @@
-const API_BASE = 'http://127.0.0.1:5000/api';
+
 
 const statusEl = document.getElementById('create-status');
 const formEl = document.getElementById('create-form');
@@ -13,7 +13,7 @@ function setStatus(message, kind = 'info') {
 
 async function loadGroups() {
     try {
-        const res = await fetch(`${API_BASE}/groups`);
+        const res = await fetch(`${API_BASE_URL}/groups`);
         if (!res.ok) {
             throw new Error('Groups niet gevonden');
         }
@@ -147,7 +147,7 @@ formEl.addEventListener('submit', async (event) => {
 
     setStatus('Aanmaken...', 'info');
     try {
-        const res = await fetch(`${API_BASE}/articles`, {
+        const res = await fetch(`${API_BASE_URL}/articles`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

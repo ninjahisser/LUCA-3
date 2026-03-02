@@ -1,13 +1,11 @@
 // CMS logica voor artikelbeheer en statistieken
 
-const API_BASE = 'http://127.0.0.1:5000/api'; // Backend API base
-
 // Statistieken ophalen en tonen
 async function loadStats() {
     const statsContainer = document.getElementById('stats-container');
     statsContainer.innerHTML = 'Statistieken laden...';
     try {
-        const res = await fetch(`${API_BASE}/stats`);
+        const res = await fetch(`${API_BASE_URL}/stats`);
         const stats = await res.json();
         const views = stats.viewsPerArticle || [];
         const maxViews = Math.max(1, ...views.map(a => a.views || 0));
@@ -55,7 +53,7 @@ async function loadArticles() {
     const container = document.getElementById('articles-container');
     container.innerHTML = 'Artikels laden...';
     try {
-        const res = await fetch(`${API_BASE}/articles`);
+        const res = await fetch(`${API_BASE_URL}/articles`);
         const articles = await res.json();
         container.innerHTML = articles.map(article => `
             <div class="cms-article-card">
@@ -80,7 +78,7 @@ window.editArticle = function(id) {
 window.deleteArticle = async function(id) {
     if (!confirm('Weet je zeker dat je dit artikel wilt verwijderen?')) return;
     try {
-        await fetch(`${API_BASE}/articles/${id}`, { method: 'DELETE' });
+        await fetch(`${API_BASE_URL}/articles/${id}`, { method: 'DELETE' });
         loadArticles();
     } catch (e) {
         alert('Fout bij verwijderen.');
@@ -99,7 +97,7 @@ if (addBtn) {
 async function loadHomepageSettings() {
     const statusEl = document.getElementById('homepage-status');
     try {
-        const res = await fetch(`${API_BASE}/site`);
+        const res = await fetch(`${API_BASE_URL}/site`);
         if (!res.ok) {
             throw new Error('Instellingen niet gevonden');
         }
@@ -132,7 +130,7 @@ async function saveHomepageSettings() {
         workshopButtonLink: document.getElementById('workshopButtonLinkInput').value.trim()
     };
     try {
-        const res = await fetch(`${API_BASE}/site`, {
+        const res = await fetch(`${API_BASE_URL}/site`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
