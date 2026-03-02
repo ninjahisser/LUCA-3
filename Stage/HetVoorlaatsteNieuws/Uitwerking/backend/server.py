@@ -227,6 +227,12 @@ def upload_image():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    """Serve uploaded images"""
+    images_dir = os.path.join(BASE_DIR, 'images')
+    return send_from_directory(images_dir, filename)
+
 @app.route('/<path:filename>')
 def serve_static(filename):
     return send_from_directory(FRONTEND_DIR, filename)
