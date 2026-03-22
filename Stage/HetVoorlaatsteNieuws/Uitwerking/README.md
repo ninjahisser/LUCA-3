@@ -1,30 +1,47 @@
-# HetVoorlaatsteNieuws - Web UI
+# HetVoorlaatsteNieuws - Content en Shop
 
-A modern web application with a CMS backend and frontend that loads articles from JSON files.
+Een Flask-app met een redactionele frontend, een CMS voor artikelen en producten, en een Stripe-gestuurde shop.
 
 ## Project Structure
 
 ```
 ├── frontend/
-│   ├── index.html          # Main HTML file
+│   ├── index.html               # Nieuws-overzicht
+│   ├── article.html             # Detailpagina voor artikels
+│   ├── shop.html                # Webshop-pagina
+│   ├── cms.html                 # CMS dashboard
+│   ├── cms-create.html          # Nieuw artikel
+│   ├── cms-edit.html            # Artikel aanpassen
+│   ├── cms-product-create.html  # Nieuw product
+│   ├── cms-product-edit.html    # Product aanpassen
 │   ├── css/
-│   │   └── style.css       # Styling
+│   │   └── style.css            # Gedeelde styling
 │   └── js/
-│       └── app.js          # Frontend logic
+│       ├── app.js
+│       ├── article.js
+│       ├── cms.js
+│       ├── cms-create.js
+│       ├── cms-edit.js
+│       ├── cms-product-create.js
+│       ├── cms-product-edit.js
+│       └── shop.js
 └── backend/
-    ├── server.py           # Flask API server
-    ├── requirements.txt    # Python dependencies
-    ├── cms/
-    │   └── article_manager.py  # CMS article management
-    └── articles/           # JSON article files (generated)
+    ├── server.py                # Flask API en static serving
+    ├── requirements.txt         # Python dependencies
+    ├── articles/                # JSON artikels
+    ├── products/                # JSON shopproducten
+    └── cms/
+        ├── article_manager.py
+        └── product_manager.py
 ```
 
 ## Backend Setup
 
 ### Requirements
-- Python 3.7+
+- Python 3.10+
 - Flask
 - Flask-CORS
+- Stripe Python SDK
 
 ### Installation
 
@@ -39,112 +56,101 @@ pip install -r requirements.txt
 python server.py
 ```
 
-The server will run on `http://localhost:5000`
+De server draait standaard op `http://localhost:5000`.
 
-### API Endpoints
+## Stripe Configuration
 
-- `GET /api/articles` - Get all articles
-- `GET /api/articles/<article_id>` - Get a specific article
+Stripe checkout is optioneel maar de shop ondersteunt het direct zodra deze environment variables zijn gezet:
 
-### Article JSON Format
+```bash
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+APP_BASE_URL=http://localhost:5000
+```
 
-Articles are stored in `backend/articles/` as JSON files:
+Zonder deze keys blijft de shop zichtbaar, maar checkout geeft dan correct aan dat Stripe nog niet geconfigureerd is.
+
+## API Endpoints
+
+### Artikels
+- `GET /api/articles`
+- `POST /api/articles`
+- `GET /api/articles/<article_id>`
+- `PUT /api/articles/<article_id>`
+- `DELETE /api/articles/<article_id>`
+- `POST /api/articles/<article_id>/view`
+- `POST /api/articles/<article_id>/click`
+- `GET /api/groups`
+- `GET /api/stats`
+
+### Shopproducten
+- `GET /api/products`
+- `GET /api/products?includeInactive=1`
+- `POST /api/products`
+- `GET /api/products/<product_id>`
+- `PUT /api/products/<product_id>`
+- `DELETE /api/products/<product_id>`
+
+### Stripe
+- `GET /api/stripe/config`
+- `POST /api/stripe/create-checkout-session`
+
+### Overig
+- `GET /api/site`
+- `PUT /api/site`
+- `POST /api/upload`
+
+## JSON Formaten
+
+### Artikel
 
 ```json
 {
   "id": "article_001",
-  "title": "Article Title",
-  "excerpt": "Short description",
-  "content": "Full article content",
-  "author": "Author Name",
-  "category": "CATEGORY",
-  "created_at": "2026-02-20T10:00:00",
-  "updated_at": "2026-02-20T10:00:00"
+  "title": "Artikel titel",
+  "category": "Nieuws",
+  "size": "klein",
+  "group": "standaard",
+  "components": [
+    { "type": "text", "content": "Tekstblok" },
+    { "type": "image", "src": "/images/example.jpg", "alt": "Omschrijving" }
+  ],
+  "created_at": "2026-03-21T10:00:00",
+  "updated_at": "2026-03-21T10:00:00"
 }
 ```
 
-### Using ArticleManager (CMS)
+### Product
 
-```python
-from cms.article_manager import ArticleManager
-
-manager = ArticleManager('articles/')
-
-# Create an article
-manager.create_article(
-    title="My Article",
-    content="Full content here",
-    author="Author Name",
-    category="NEWS"
-)
-
-# Get all articles
-articles = manager.get_all_articles()
-
-# Update an article
-manager.update_article('article_id', title="New Title")
-
-# Delete an article
-manager.delete_article('article_id')
+```json
+{
+  "id": "product_001",
+  "title": "Editorial Poster Pack",
+  "subtitle": "Set van 3 grafische prints",
+  "short_description": "Korte omschrijving",
+  "description": "Volledige producttekst",
+  "category": "Prints",
+  "badge": "Bestseller",
+  "image": "https://placehold.co/900x1200",
+  "cta_label": "Bestel nu",
+  "price_cents": 2900,
+  "currency": "eur",
+  "featured": true,
+  "active": true,
+  "created_at": "2026-03-21T10:00:00",
+  "updated_at": "2026-03-21T10:00:00"
+}
 ```
 
-## Frontend Setup
+## Frontend Pages
 
-No build process required - just open `index.html` in a browser or serve with a local server.
+- `/` toont de artikelen-homepage
+- `/article/<id>` toont een artikel
+- `/shop` toont de webshop met Stripe checkout
+- `/cms` is het dashboard voor artikelen, producten en homepage-instellingen
 
-### Using with Local Server
+## Development Notes
 
-```bash
-# Using Python
-python -m http.server 8000
-
-# Using Node.js (if installed)
-npx http-server
-```
-
-Then navigate to `http://localhost:8000/frontend/`
-
-### Features
-
-- Responsive grid layout
-- Dynamic article loading from API
-- Article detail modal view
-- Category badges
-- Author and date information
-- Error handling with user-friendly messages
-
-## Development
-
-### Frontend Architecture
-
-The `app.js` file contains the `ArticleLoader` class which handles:
-- Fetching articles from the API
-- Rendering articles as cards
-- Displaying article details in a modal
-
-### Backend Architecture
-
-- `server.py`: Flask server with CORS enabled for frontend communication
-- `article_manager.py`: CMS logic for CRUD operations on articles
-- `articles/`: Directory containing JSON article files
-
-## Customization
-
-### Styling
-Edit `frontend/css/style.css` to customize colors, layouts, and responsive behavior.
-
-### API Configuration
-To change the API endpoint in the frontend, modify the `apiUrl` parameter in `app.js`:
-
-```javascript
-const loader = new ArticleLoader('http://your-api-url/api');
-```
-
-## Future Enhancements
-
-- Database integration instead of JSON files
-- Admin panel for article management
-- Search and filtering functionality
-- Pagination
-- Comments system
-- User authentication
+- Artikelen en producten worden allebei als JSON opgeslagen; er is geen database nodig.
+- Geuploade media worden via `/api/upload` opgeslagen in `backend/images/`.
+- De shop gebruikt dezelfde CSS als de rest van de site zodat de vormtaal consistent blijft.

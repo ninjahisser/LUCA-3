@@ -24,5 +24,6 @@ desktop.ini
 # Local development
 views.json
 *.log
+backend/.env
 
 # Don't ignore site_settings.json and articles - they're your content!

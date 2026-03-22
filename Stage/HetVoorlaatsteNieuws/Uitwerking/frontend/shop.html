@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVLN Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="shop-page">
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="nav-top-bar">
+                <a href="/" class="logo" style="text-decoration: none; color: inherit;">HVLN</a>
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">NIEUW</a></li>
+                    <li><a href="/shop" class="nav-link active">SHOP</a></li>
+                    <li><a href="#" class="nav-link">PROJECTEN</a></li>
+                    <li><a href="#" class="nav-link">SOCIALS</a></li>
+                    <li><a href="/cms" class="nav-link">CMS</a></li>
+                    <li>
+                        <a href="/cart" class="nav-link cart-nav-link">
+                            🛒 <span id="cart-badge" class="cart-badge">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="nav-submenu">
+                <span>PRINTS</span>
+                <span>TOOLS</span>
+                <span>EDITIES</span>
+                <span>WORKSHOPS</span>
+                <span>STRIPE CHECKOUT</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="content-wrapper shop-wrapper">
+        <section class="shop-hero">
+            <div class="shop-hero-copy">
+                <div class="shop-kicker">HVLN SHOP</div>
+                <h1>Objecten en edities in dezelfde vormentaal als de site.</h1>
+                <p>De shop gebruikt dezelfde visuele stijl als de redactionele pagina's, maar met een directe Stripe-checkout voor aankoop.</p>
+                <div id="stripe-status" class="shop-inline-note">Stripe status laden...</div>
+            </div>
+            <div id="featured-product" class="shop-featured-card">
+                <div class="loading">Uitgelicht product laden...</div>
+            </div>
+        </section>
+
+        <section class="shop-body">
+            <div class="shop-body-header">
+                <div>
+                    <div class="shop-section-label">Catalogus</div>
+                    <h2>Beschikbare artikelen</h2>
+                </div>
+                <a href="/cms" class="btn-blue shop-manage-link">Open CMS</a>
+            </div>
+            <div id="shop-status" class="cms-status" style="display: none;"></div>
+            <div id="products-grid" class="shop-grid">
+                <div class="loading">Producten laden...</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-top">
+            <div class="footer-logo">HVLN</div>
+            <div class="footer-title">Ontvang de nieuwsbrief</div>
+        </div>
+        <div class="footer-content">
+            <div class="footer-input-section">
+                <input type="email" placeholder="E-MAIL" class="footer-email">
+            </div>
+            <div class="footer-sections">
+                <div class="footer-section">
+                    <h4>SHOP</h4>
+                    <ul>
+                        <li><a href="/shop">Alle producten</a></li>
+                        <li><a href="/cms">CMS</a></li>
+                        <li><a href="/">Nieuws</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>BETALEN</h4>
+                    <ul>
+                        <li><a href="https://stripe.com" target="_blank" rel="noopener">Powered by Stripe</a></li>
+                        <li><a href="#">Levering</a></li>
+                        <li><a href="#">Retour</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>MEER</h4>
+                    <ul>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">YouTube</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/cart.js"></script>
+    <script src="/js/shop.js"></script>
+</body>
+</html>
