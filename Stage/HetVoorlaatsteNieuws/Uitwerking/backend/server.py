@@ -156,7 +156,7 @@ def save_order_from_stripe_session(session_id):
     if existing_order:
         return existing_order, False
 
-    full_session = stripe.checkout.Session.retrieve(session_id, expand=['line_items', 'customer', 'payment_intent', 'shipping'])
+    full_session = stripe.checkout.Session.retrieve(session_id, expand=['line_items', 'customer', 'payment_intent'])
 
     order_items = []
     total_cents = 0
@@ -172,8 +172,7 @@ def save_order_from_stripe_session(session_id):
         total_cents += item['subtotal_cents']
 
     # Verzamel zoveel mogelijk relevante Stripe session info
-        customer_email_frontend = data.get('customer_email')
-        customer_email = full_session.get('customer_email') or customer_email_frontend or 'onbekend@email.com'
+    customer_email = full_session.get('customer_email') or 'onbekend@email.com'
     customer_name = None
     if full_session.get('customer') and isinstance(full_session['customer'], dict):
         customer_name = full_session['customer'].get('name')
@@ -461,8 +460,7 @@ def create_checkout_session():
                         },
                     }
                 }
-            ],
-            shipping=stripe_shipping if stripe_shipping else None
+            ]
         )
     except FileNotFoundError:
         return jsonify({'error': 'Een of meer producten niet gevonden.'}), 404
