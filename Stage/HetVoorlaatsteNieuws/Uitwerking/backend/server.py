@@ -172,7 +172,12 @@ def save_order_from_stripe_session(session_id):
         total_cents += item['subtotal_cents']
 
     # Verzamel zoveel mogelijk relevante Stripe session info
-    customer_email = full_session.get('customer_email') or 'onbekend@email.com'
+    customer_email = (
+        full_session.get('customer_email')
+        or (full_session.get('customer_details') or {}).get('email')
+        or (full_session.get('customer') or {}).get('email')
+        or 'onbekend@email.com'
+    )
     customer_name = None
     if full_session.get('customer') and isinstance(full_session['customer'], dict):
         customer_name = full_session['customer'].get('name')
