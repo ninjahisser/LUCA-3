@@ -7,25 +7,14 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Top Navigation -->
-  <nav class="top-nav">
-    <a href="/" class="logo">Het Voorlaatste Nieuws</a>
-  </nav>
 
-  <!-- Navigation Menu -->
-  <nav class="navbar">
-    <a href="/" class="nav-item">Startpagina</a>
-    <a href="/shop" class="nav-item">Shop</a>
-    <a href="/cart" class="nav-item active">Winkelmandje</a>
-    <a href="/cms" class="nav-item">Dashboard</a>
-    <a href="/#" id="cart-icon-nav" class="nav-item cart-icon-nav">
-      🛒 <span id="cart-badge-nav" class="cart-badge"></span>
-    </a>
-  </nav>
+  <div style="padding: 24px 0 0 0;">
+    <a href="/shop" style="font-size:15px; color:#222; text-decoration:underline; margin-left:16px;">← Terug naar shop</a>
+  </div>
 
   <main class="container">
     <section class="cart-wrapper">
-      <h1>Winkelmandje</h1>
+
 
       <div id="cart-content">
         <!-- Cart items will be rendered here -->
@@ -52,34 +41,12 @@
           </div>
         </div>
 
-        <button id="checkout-btn" class="btn btn-primary btn-large">Naar kassa (Stripe)</button>
-        <a href="/shop" class="btn btn-secondary">Nog een product toevoegen</a>
+        <button id="checkout-btn" class="checkout-btn-modern">Naar kassa</button>
+        <a href="/shop" class="add-more-btn-modern">Nog een product toevoegen</a>
       </div>
     </section>
 
-    <form id="shipping-form" class="shipping-form" autocomplete="shipping address-line1">
-      <h3>Leveradres</h3>
-      <div class="form-row">
-        <label for="shipping_email">E-mail</label>
-        <input type="email" id="shipping_email" name="shipping_email" required autocomplete="email">
-      </div>
-      <div class="form-row">
-        <label for="shipping_name">Naam</label>
-        <input type="text" id="shipping_name" name="shipping_name" required autocomplete="name">
-      </div>
-      <div class="form-row">
-        <label for="shipping_address">Adres</label>
-        <input type="text" id="shipping_address" name="shipping_address" required autocomplete="address-line1">
-      </div>
-      <div class="form-row">
-        <label for="shipping_postal">Postcode</label>
-        <input type="text" id="shipping_postal" name="shipping_postal" required autocomplete="postal-code">
-      </div>
-      <div class="form-row">
-        <label for="shipping_city">Stad</label>
-        <input type="text" id="shipping_city" name="shipping_city" required autocomplete="address-level2">
-      </div>
-    </form>
+
 
     <div id="checkout-status" class="status-message"></div>
   </main>
@@ -155,25 +122,13 @@
       const items = cart.getItems();
       if (items.length === 0) return;
 
-      // Verzamel leveradres
-      const form = document.getElementById('shipping-form');
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-      const customer_email = form.shipping_email.value.trim();
-      const shipping_address = {
-        name: form.shipping_name.value.trim(),
-        address: form.shipping_address.value.trim(),
-        postal: form.shipping_postal.value.trim(),
-        city: form.shipping_city.value.trim()
-      };
 
+      // Geen leveradres meer, alleen items meesturen
       try {
         const response = await fetch('/api/stripe/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items, shipping_address, customer_email })
+          body: JSON.stringify({ items })
         });
 
         const data = await response.json();
@@ -223,8 +178,7 @@
 
           cart.clear();
           renderCart();
-          statusEl.className = 'status-message success';
-          statusEl.textContent = 'Betaling gelukt. Bestelling is opgeslagen.';
+          window.location.href = '/shop?checkout=success';
         } catch (error) {
           statusEl.className = 'status-message error';
           statusEl.textContent = `Betaling gelukt, maar order-opslag mislukte: ${error.message}`;

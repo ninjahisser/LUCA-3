@@ -1,7 +1,13 @@
+function animateCartButton() {
+    const btn = document.getElementById('floating-cart-btn');
+    if (!btn) return;
+    btn.classList.remove('cart-animate');
+    // Force reflow for restart animation
+    void btn.offsetWidth;
+    btn.classList.add('cart-animate');
+}
 const shopStatusEl = document.getElementById('shop-status');
-const stripeStatusEl = document.getElementById('stripe-status');
 const productsGridEl = document.getElementById('products-grid');
-const featuredProductEl = document.getElementById('featured-product');
 
 let stripeClient = null;
 let stripeConfig = { enabled: false, publishableKey: '' };
@@ -26,43 +32,9 @@ function setStatus(message, kind = 'info') {
     shopStatusEl.className = `cms-status cms-status-${kind}`;
 }
 
-function setStripeStatus() {
-    if (stripeConfig.enabled) {
-        stripeStatusEl.textContent = 'Stripe checkout is actief.';
-        stripeStatusEl.className = 'shop-inline-note shop-inline-note-success';
-        return;
-    }
-    stripeStatusEl.textContent = 'Stripe is nog niet actief. Zet STRIPE_SECRET_KEY en STRIPE_PUBLISHABLE_KEY op de server om live afrekenen in te schakelen.';
-    stripeStatusEl.className = 'shop-inline-note shop-inline-note-warning';
-}
 
-function getFeaturedProduct() {
-    return products.find(product => product.featured) || products[0] || null;
-}
 
-function renderFeaturedProduct() {
-    const product = getFeaturedProduct();
-    if (!product) {
-        featuredProductEl.innerHTML = '<div class="error">Geen producten beschikbaar.</div>';
-        return;
-    }
 
-    featuredProductEl.innerHTML = `
-        <div class="shop-featured-media">
-            <img src="${resolveMediaUrl(product.image)}" alt="${product.title}">
-        </div>
-        <div class="shop-featured-content">
-            <div class="shop-card-badge">${product.badge || 'Uitgelicht'}</div>
-            <h2>${product.title}</h2>
-            <p class="shop-featured-subtitle">${product.subtitle || ''}</p>
-            <p class="shop-featured-description">${product.description || product.short_description || ''}</p>
-            <div class="shop-featured-footer">
-                <span class="shop-price">${formatPrice(product.price_cents, product.currency)}</span>
-                <button class="btn-blue shop-buy-button" data-product-id="${product.id}">${product.cta_label || 'Koop nu'}</button>
-            </div>
-        </div>
-    `;
-}
 
 function renderProducts() {
     if (!products.length) {
@@ -100,6 +72,7 @@ function addToCart(productId) {
     // Use global cart instance from cart.js
     if (typeof cart !== 'undefined') {
         const result = cart.addItem(product);
+        animateCartButton();
         if (result === 'added') {
             setStatus(`${product.title} toegevoegd aan winkelmandje!`, 'success');
         } else {
@@ -114,7 +87,7 @@ function handleQueryStatus() {
     const params = new URLSearchParams(window.location.search);
     const checkoutState = params.get('checkout');
     if (checkoutState === 'success') {
-        setStatus('Betaling gelukt. Stripe stuurde je terug naar de shop.', 'success');
+        setStatus('Bestelling geslaagd!', 'success');
     } else if (checkoutState === 'cancelled') {
         setStatus('Betaling geannuleerd. Je kan opnieuw proberen wanneer je wil.', 'error');
     }
@@ -129,6 +102,7 @@ function registerEvents() {
         addToCart(button.dataset.productId);
     });
 }
+
 
 async function loadShop() {
     handleQueryStatus();
@@ -148,8 +122,7 @@ async function loadShop() {
             stripeClient = window.Stripe(stripeConfig.publishableKey);
         }
 
-        setStripeStatus();
-        renderFeaturedProduct();
+        // Stripe status UI niet meer nodig
         renderProducts();
 
         if (window.location.hash) {
@@ -159,10 +132,9 @@ async function loadShop() {
             }
         }
     } catch (error) {
-        featuredProductEl.innerHTML = '<div class="error">Fout bij laden van shop.</div>';
         productsGridEl.innerHTML = '<div class="error">Fout bij laden van shop.</div>';
         setStatus(error.message, 'error');
-        setStripeStatus();
+        // Stripe status UI niet meer nodig
     }
 }
 
