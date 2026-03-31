@@ -162,7 +162,8 @@
 :root {
     /* Colors */
     --dark: #000000;
-    --third: #0033FF;
+    /* HVLN --third: #0033FF; */
+    /* STUDIO MALEM */ --third: #006aad;
     --thirdlight: #91B6FF;
     --main: #FFFFFF;
     --background: #F5F5F5;
